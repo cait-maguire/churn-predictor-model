@@ -1,5 +1,6 @@
 import { Chart } from '../chartSetup.js';
-import { getChartColors, getCategoricalColorsForLabels } from '../chartColors.js';
+import { getChartColors, getCategoricalColorForLabel, getCategoricalColorsForLabels } from '../chartColors.js';
+import { renderLegendHtml, bindLegend } from '../legend.js';
 import { computeFilteredExcluding } from '../../lib/crossFilter.js';
 import { SEGMENT_FIELDS } from '../../lib/fieldCatalog.js';
 import { setActiveSegmentField, toggleFilter } from '../../state/store.js';
@@ -51,6 +52,12 @@ export function render(container, state) {
             <div class="chart-wrap chart-wrap-small"><canvas id="segment-revenue-canvas"></canvas></div>
           </div>
         </div>
+        <div id="segment-legend">${renderLegendHtml(labels.map((l) => ({
+          value: l,
+          label: l,
+          color: getCategoricalColorForLabel(`segment:${state.activeSegmentField}`, l),
+          active: l === selected,
+        })))}</div>
       `}
       ${blankCount > 0 ? `<p class="hint">${formatNumber(blankCount)} churned customers have no value for this segment field.</p>` : ''}
     </div>
@@ -61,6 +68,8 @@ export function render(container, state) {
   });
   const clearBtn = container.querySelector('#clear-segment-filter');
   if (clearBtn) clearBtn.addEventListener('click', () => toggleFilter('segmentValue', selected));
+  const legendMount = container.querySelector('#segment-legend');
+  if (legendMount) bindLegend(legendMount, (value) => toggleFilter('segmentValue', value));
 
   if (countChart) { countChart.destroy(); countChart = null; }
   if (revenueChart) { revenueChart.destroy(); revenueChart = null; }

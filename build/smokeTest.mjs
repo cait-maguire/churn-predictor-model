@@ -41,12 +41,12 @@ const overviewText = await page.locator('.overview-widget').innerText();
 const dqText = await page.locator('.data-quality-panel').innerText();
 
 const mustContain = [
-  [overviewText, '5', 'churned customers'],
-  [overviewText, '182,000', 'total revenue lost'],
-  [dqText, '11 total rows parsed', ''],
+  [overviewText, '12', 'churned customers'],
+  [overviewText, '544,000', 'total revenue lost'],
+  [dqText, '18 total rows parsed', ''],
   [dqText, '1 entirely blank rows dropped', ''],
-  [dqText, '8 churn cases found', ''],
-  [dqText, '5 distinct churned customers', ''],
+  [dqText, '15 churn cases found', ''],
+  [dqText, '12 distinct churned customers', ''],
   [dqText, '2 accounts had more than one churn case', ''],
   [dqText, 'inconsistent Revenue', ''],
   [dqText, 'inconsistent Service Segment', ''],
@@ -74,12 +74,12 @@ for (const [xf, yf] of candidates) {
   await page.mouse.click(box.x + box.width * xf, box.y + box.height * yf);
   await page.waitForTimeout(150);
   overviewAfterFilter = await page.locator('.overview-widget').innerText();
-  if (overviewAfterFilter.includes('of 5 total')) break;
+  if (overviewAfterFilter.includes('of 12 total')) break;
 }
 console.log('--- Overview after clicking segment bar ---');
 console.log(overviewAfterFilter);
-if (!overviewAfterFilter.includes('of 5 total')) {
-  throw new Error(`Expected overview to show a filtered subset "of 5 total", got: ${overviewAfterFilter}`);
+if (!overviewAfterFilter.includes('of 12 total')) {
+  throw new Error(`Expected overview to show a filtered subset "of 12 total", got: ${overviewAfterFilter}`);
 }
 
 await page.screenshot({ path: path.join(rootDir, 'build/screenshot-filtered.png'), fullPage: true });

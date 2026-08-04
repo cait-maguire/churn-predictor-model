@@ -54,15 +54,20 @@ node build/smokeTest.mjs
    stage, blank rows dropped, rows excluded for a missing join key or
    revenue, and any accounts with inconsistent values across their case
    rows.
-4. **Explore the dashboard**: total churned customers and revenue lost, the
-   revenue distribution across customers, customers/revenue by a
-   segmentation field of your choice, a churn reason (with subreason
-   drill-down) breakdown, and a combined segment-by-reason stacked view
-   (each bar is a segment value, colored slices show its churn reason mix
-   with a customer-count label). Every segment value and every churn
-   reason/subreason gets its own stable color, matched across all widgets.
-   Click any bar or slice to cross-filter the rest of the dashboard; click
-   it again to clear.
+4. **Explore the dashboard**:
+   - total churned customers and revenue lost
+   - revenue distribution across individual customers
+   - customers/revenue by a segmentation field of your choice
+   - churn reason breakdown, with a subreason drill-down
+   - combined **segment × churn reason** stacked view
+   - combined **segment × churn subreason** stacked view
+
+   Every bar carries a data label with its value, and every chart has a
+   legend. Each segment value and churn reason gets its own stable color;
+   **subreasons are colored as shades of their parent churn reason**, so
+   related subreasons read as one family (the subreason legend is grouped
+   by parent reason to match). Click any bar, slice, or legend item to
+   cross-filter the rest of the dashboard; click it again to clear.
 
 Out of scope for Phase 1 (by design, for later phases): case-feedback/NPS
 analysis and predictive modeling. The internal pipeline (`src/lib/`) is
@@ -106,6 +111,14 @@ assumptions rather than bury them silently:
   separately from missing-join-key rows) if every *mapped* field is empty
   — not necessarily every raw column, in case an unmapped column has
   stray data.
+- **Subreason parent reason**: subreason colors are derived from the churn
+  reason they appear under in the data. If the same subreason text appears
+  under more than one reason, it is colored by its **most frequent** parent
+  reason, and the widget says how many subreasons this affected rather than
+  resolving it silently.
+- **Data labels** are drawn on every bar, but suppressed on charts with more
+  than 30 bars and inside stacked slices thinner than 16px, where they would
+  overlap rather than inform.
 - **Revenue-distribution histogram threshold**: above 75 churned customers
   in the current selection, the per-customer bar chart switches to a
   12-bucket histogram for legibility. Arbitrary, easy to adjust in

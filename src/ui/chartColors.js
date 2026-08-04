@@ -49,6 +49,7 @@ const labelColorIndex = new Map(); // dimensionKey -> Map<label, index>
 
 export function resetCategoricalColors() {
   labelColorIndex.clear();
+  subreasonIndexByReason.clear();
 }
 
 function getOrAssignIndex(dimensionKey, label) {
@@ -64,6 +65,67 @@ function hexToRgba(hex, alpha) {
   const g = (n >> 8) & 255;
   const b = n & 255;
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function hexToRgb(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+
+function rgbToHex({ r, g, b }) {
+  const to2 = (v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+  return `#${to2(r)}${to2(g)}${to2(b)}`;
+}
+
+function mixHex(hex, targetHex, amount) {
+  const a = hexToRgb(hex);
+  const b = hexToRgb(targetHex);
+  return rgbToHex({
+    r: a.r + (b.r - a.r) * amount,
+    g: a.g + (b.g - a.g) * amount,
+    b: a.b + (b.b - a.b) * amount,
+  });
+}
+
+// Subreasons are colored as shades of their parent reason's hue, so the
+// relationship reads visually (e.g. every "Service Experience" subreason is
+// a variant of that reason's blue). Shades alternate lighter/darker away
+// from the base color; the darkening target is kept above the dark surface
+// in dark mode so a deep shade never disappears into the background.
+const SUBREASON_SHADE_STEPS = [
+  [null, 0],        // the parent reason's own base color
+  ['light', 0.32],
+  ['dark', 0.26],
+  ['light', 0.54],
+  ['dark', 0.44],
+  ['light', 0.70],
+  ['dark', 0.58],
+];
+
+// subreason index is scoped per parent reason, so shade assignment restarts
+// for each reason's own list of subreasons.
+const subreasonIndexByReason = new Map(); // reason -> Map<subreason, index>
+
+function getSubreasonIndex(reason, subreason) {
+  if (!subreasonIndexByReason.has(reason)) subreasonIndexByReason.set(reason, new Map());
+  const m = subreasonIndexByReason.get(reason);
+  if (!m.has(subreason)) m.set(subreason, m.size);
+  return m.get(subreason);
+}
+
+export function getSubreasonColor(reason, subreason) {
+  const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  // A subreason with no known parent reason falls back to its own
+  // categorical slot rather than borrowing an unrelated reason's hue.
+  if (reason === null || reason === undefined || reason === '') {
+    return getCategoricalColorForLabel('subreason', subreason);
+  }
+  const base = getCategoricalColorForLabel('reason', reason);
+  const [direction, amount] = SUBREASON_SHADE_STEPS[getSubreasonIndex(reason, subreason) % SUBREASON_SHADE_STEPS.length];
+  if (direction === null) return base;
+  if (direction === 'light') return mixHex(base, '#ffffff', amount);
+  // Darkening target differs by mode so dark-mode shades stay off the surface.
+  return mixHex(base, isDark ? '#4a4a46' : '#141413', isDark ? Math.min(amount, 0.4) : amount);
 }
 
 // The stable color for one label within one dimension (e.g. dimensionKey

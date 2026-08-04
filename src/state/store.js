@@ -87,6 +87,17 @@ export function setSegmentReasonFilter(segmentValue, reason) {
   emit();
 }
 
+// Same idea for the segment-by-subreason widget: one click pins both that
+// widget's axes. Churn reason is deliberately left alone here - a subreason
+// already implies its parent reason, and forcing the reason filter too
+// would double-constrain the other widgets.
+export function setSegmentSubreasonFilter(segmentValue, subreason) {
+  const alreadyActive = state.filters.segmentValue === segmentValue && state.filters.churnSubreason === subreason;
+  state.filters.segmentValue = alreadyActive ? null : segmentValue;
+  state.filters.churnSubreason = alreadyActive ? null : subreason;
+  emit();
+}
+
 export function resetAll() {
   state.fileInfo = null;
   state.rawRows = null;

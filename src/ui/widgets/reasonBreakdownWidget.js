@@ -1,5 +1,6 @@
 import { Chart } from '../chartSetup.js';
-import { getChartColors, getCategoricalColorsForLabels } from '../chartColors.js';
+import { getChartColors, getCategoricalColorForLabel, getCategoricalColorsForLabels, getSubreasonColor, applyDim } from '../chartColors.js';
+import { renderLegendHtml, bindLegend } from '../legend.js';
 import { computeFilteredExcluding } from '../../lib/crossFilter.js';
 import { toggleFilter } from '../../state/store.js';
 import { escapeHtml, formatNumber } from '../utils.js';
@@ -40,7 +41,13 @@ export function render(container, state) {
       ${state.filters.churnReason !== null ? `<p class="hint">Filtered to reason: <strong>${escapeHtml(state.filters.churnReason)}</strong> — click its bar again, or <button type="button" id="clear-reason-filter" class="link-btn">clear</button></p>` : ''}
       ${reasonEntries.length === 0
         ? '<p class="hint">No churn reasons found in the current selection.</p>'
-        : '<div class="chart-wrap"><canvas id="reason-canvas"></canvas></div>'}
+        : `<div class="chart-wrap"><canvas id="reason-canvas"></canvas></div>
+           <div id="reason-legend">${renderLegendHtml(reasonEntries.map(([reason]) => ({
+             value: reason,
+             label: reason,
+             color: getCategoricalColorForLabel('reason', reason),
+             active: reason === state.filters.churnReason,
+           })))}</div>`}
       ${reasonBlankCount > 0 ? `<p class="hint">${formatNumber(reasonBlankCount)} churned customers have no Churn Reason recorded.</p>` : ''}
 
       ${showSubreason ? `
@@ -48,7 +55,13 @@ export function render(container, state) {
         ${state.filters.churnSubreason !== null ? `<p class="hint">Filtered to subreason: <strong>${escapeHtml(state.filters.churnSubreason)}</strong> — click its bar again, or <button type="button" id="clear-subreason-filter" class="link-btn">clear</button></p>` : ''}
         ${subreasonEntries.length === 0
           ? '<p class="hint">No subreasons recorded for this reason in the current selection.</p>'
-          : '<div class="chart-wrap"><canvas id="subreason-canvas"></canvas></div>'}
+          : `<div class="chart-wrap"><canvas id="subreason-canvas"></canvas></div>
+             <div id="subreason-legend">${renderLegendHtml(subreasonEntries.map(([sr]) => ({
+               value: sr,
+               label: sr,
+               color: getSubreasonColor(state.filters.churnReason, sr),
+               active: sr === state.filters.churnSubreason,
+             })), { compact: true })}</div>`}
         ${subreasonBlankCount > 0 ? `<p class="hint">${formatNumber(subreasonBlankCount)} churned customers with this reason have no Churn Subreason recorded.</p>` : ''}
       ` : ''}
     </div>
@@ -58,6 +71,11 @@ export function render(container, state) {
   if (clearReasonBtn) clearReasonBtn.addEventListener('click', () => toggleFilter('churnReason', state.filters.churnReason));
   const clearSubreasonBtn = container.querySelector('#clear-subreason-filter');
   if (clearSubreasonBtn) clearSubreasonBtn.addEventListener('click', () => toggleFilter('churnSubreason', state.filters.churnSubreason));
+
+  const reasonLegendMount = container.querySelector('#reason-legend');
+  if (reasonLegendMount) bindLegend(reasonLegendMount, (reason) => toggleFilter('churnReason', reason));
+  const subreasonLegendMount = container.querySelector('#subreason-legend');
+  if (subreasonLegendMount) bindLegend(subreasonLegendMount, (sr) => toggleFilter('churnSubreason', sr));
 
   if (reasonChart) { reasonChart.destroy(); reasonChart = null; }
   if (subreasonChart) { subreasonChart.destroy(); subreasonChart = null; }
@@ -97,7 +115,12 @@ export function render(container, state) {
         labels,
         datasets: [{
           data: subreasonEntries.map(([, count]) => count),
-          backgroundColor: getCategoricalColorsForLabels('subreason', labels, state.filters.churnSubreason),
+          // Shades of the drilled-into reason's own color - every subreason
+          // shown here belongs to that reason.
+          backgroundColor: labels.map((l) => applyDim(
+            getSubreasonColor(state.filters.churnReason, l),
+            state.filters.churnSubreason !== null && l !== state.filters.churnSubreason,
+          )),
           borderRadius: 4,
         }],
       },

@@ -10,3 +10,10 @@ Account Name: Reference Affiliate: Company No.,Case Record Type,CaseSafeId,Accou
 10000007,Churn,CASE0007A,GRP-G1,Eta Systems,SME,Payroll BPO,8/8/2020,Domestic,777777,90000009,Open,,,,,,
 ,Churn,CASE0008A,GRP-H1,Theta Partners,SME,CPS,10/10/2013,Domestic,888888,90000010,Closed,6/6/2025,Pricing,Too expensive/no value for money,Left,,15000
 ,,ORPHAN0009,,,,,,,,,,,,,,,
+10000010,Churn,CASE0010A,GRP-I1,Iota Retail,SME,CPS,4/4/2017,Domestic,999999,90000011,Closed,2/14/2025,Pricing,Competitor undercut price,Left,,28000
+10000011,Churn,CASE0011A,GRP-J1,Kappa Foods,CET,MPS,5/5/2014,International,101010,90000012,Closed,3/3/2025,Pricing,Budget cuts,Left,Call/Visit,73000
+10000012,Churn,CASE0012A,GRP-K1,Lambda Health,SME,Payroll BPO,11/11/2011,Domestic,111213,90000013,Closed,3/28/2025,Service Experience,Slow issue resolution,Left,,54000
+10000013,Churn,CASE0013A,GRP-L1,Mu Logistics,CET,CPS,1/1/2021,International,141516,90000014,Closed,4/18/2025,Service Experience,Missed deadlines,Left,Call/Visit,36000
+10000014,Churn,CASE0014A,GRP-M1,Nu Media,SME,MPS,7/19/2016,Domestic,171819,90000015,Closed,5/22/2025,Contact Experience,Poor account management,Left,,47000
+10000015,Churn,CASE0015A,GRP-N1,Xi Manufacturing,CET,Payroll BPO,9/30/2013,International,202122,90000016,Closed,6/11/2025,Value Proposition,Missing product features,Left,Call/Visit,91000
+10000016,Churn,CASE0016A,GRP-O1,Omicron Tech,SME,CPS,2/28/2019,Domestic,232425,90000017,Closed,7/1/2025,Value Proposition,Moved in-house,Left,,33000

@@ -1,16 +1,14 @@
 import { Chart } from '../chartSetup.js';
-import { getChartColors, getCategoricalColorForLabel, applyDim } from '../chartColors.js';
+import { getChartColors, getCategoricalColorForLabel, getSubreasonColor, applyDim } from '../chartColors.js';
+import { renderLegendHtml, bindLegend } from '../legend.js';
 import { computeFilteredExcluding } from '../../lib/crossFilter.js';
 import { SEGMENT_FIELDS } from '../../lib/fieldCatalog.js';
 import { setActiveSegmentField, setSegmentReasonFilter, toggleFilter } from '../../state/store.js';
+import { buildSegmentMatrix } from './segmentMatrix.js';
 import { escapeHtml, formatNumber } from '../utils.js';
 
 let mainChart = null;
 let subreasonChart = null;
-
-function getSegmentValue(customer, fieldKey) {
-  return fieldKey === 'companyNo' ? customer.companyNo : customer.segments[fieldKey]?.value ?? null;
-}
 
 export function render(container, state) {
   const colors = getChartColors();
@@ -18,32 +16,11 @@ export function render(container, state) {
   // Both segment and reason (and its subreason drill-down) are "owned" by
   // this widget's own axes, so they're excluded here - the chart always
   // shows the full segment x reason matrix; active filters only change
-  // which slice is highlighted vs. dimmed (below), never which bars appear.
+  // which slice is highlighted vs. dimmed, never which bars appear.
   const base = computeFilteredExcluding(state, ['segment', 'reason', 'subreason']);
-
-  const matrix = new Map(); // segmentValue -> Map<reason, count>
-  const segmentTotals = new Map();
-  let blankSegmentCount = 0;
-  let blankReasonCount = 0;
-
-  for (const customer of base) {
-    const segValue = getSegmentValue(customer, state.activeSegmentField);
-    if (segValue === null) { blankSegmentCount += 1; continue; }
-    const reason = customer.canonicalCase.churnReason;
-    if (reason === null || reason === undefined || reason === '') { blankReasonCount += 1; continue; }
-    if (!matrix.has(segValue)) matrix.set(segValue, new Map());
-    const reasonMap = matrix.get(segValue);
-    reasonMap.set(reason, (reasonMap.get(reason) || 0) + 1);
-    segmentTotals.set(segValue, (segmentTotals.get(segValue) || 0) + 1);
-  }
-
-  const segmentValues = [...segmentTotals.entries()].sort((a, b) => b[1] - a[1]).map(([v]) => v);
-
-  const reasonTotals = new Map();
-  for (const reasonMap of matrix.values()) {
-    for (const [reason, count] of reasonMap) reasonTotals.set(reason, (reasonTotals.get(reason) || 0) + count);
-  }
-  const reasons = [...reasonTotals.entries()].sort((a, b) => b[1] - a[1]).map(([r]) => r);
+  const {
+    matrix, segmentTotals, segmentValues, categories: reasons, blankSegmentCount, blankCategoryCount,
+  } = buildSegmentMatrix(base, state.activeSegmentField, (c) => c.canonicalCase.churnReason);
 
   const activeSegment = state.filters.segmentValue;
   const activeReason = state.filters.churnReason;
@@ -63,6 +40,13 @@ export function render(container, state) {
     subEntries = [...counts.entries()].sort((a, b) => b[1] - a[1]);
   }
 
+  const legendItems = reasons.map((reason) => ({
+    value: reason,
+    label: reason,
+    color: getCategoricalColorForLabel('reason', reason),
+    active: reason === activeReason,
+  }));
+
   container.innerHTML = `
     <div class="widget widget-wide segment-reason-widget">
       <div class="widget-header">
@@ -75,9 +59,10 @@ export function render(container, state) {
       ${comboActive ? `<p class="hint">Filtered to: <strong>${escapeHtml(activeSegment)}</strong> &rarr; <strong>${escapeHtml(activeReason)}</strong> — click that slice again, or <button type="button" id="clear-segreason-filter" class="link-btn">clear</button></p>` : ''}
       ${segmentValues.length === 0
         ? '<p class="hint">No segment + reason data available in the current selection.</p>'
-        : '<div class="chart-wrap"><canvas id="segment-reason-canvas"></canvas></div>'}
+        : `<div class="chart-wrap"><canvas id="segment-reason-canvas"></canvas></div>
+           <div id="segreason-legend">${renderLegendHtml(legendItems)}</div>`}
       ${blankSegmentCount > 0 ? `<p class="hint">${formatNumber(blankSegmentCount)} churned customers have no value for this segment field.</p>` : ''}
-      ${blankReasonCount > 0 ? `<p class="hint">${formatNumber(blankReasonCount)} churned customers (with a segment value) have no Churn Reason recorded.</p>` : ''}
+      ${blankCategoryCount > 0 ? `<p class="hint">${formatNumber(blankCategoryCount)} churned customers (with a segment value) have no Churn Reason recorded.</p>` : ''}
 
       ${showSubreason ? `
         <h4>Subreason drill-down: ${escapeHtml(activeSegment)} &rarr; ${escapeHtml(activeReason)}</h4>
@@ -97,6 +82,9 @@ export function render(container, state) {
   if (clearBtn) clearBtn.addEventListener('click', () => setSegmentReasonFilter(activeSegment, activeReason));
   const clearSubBtn = container.querySelector('#clear-segreason-subreason-filter');
   if (clearSubBtn) clearSubBtn.addEventListener('click', () => toggleFilter('churnSubreason', state.filters.churnSubreason));
+
+  const legendMount = container.querySelector('#segreason-legend');
+  if (legendMount) bindLegend(legendMount, (reason) => toggleFilter('churnReason', reason));
 
   if (mainChart) { mainChart.destroy(); mainChart = null; }
   if (subreasonChart) { subreasonChart.destroy(); subreasonChart = null; }
@@ -121,7 +109,7 @@ export function render(container, state) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 12, boxHeight: 12 } } },
+      plugins: { legend: { display: false } },
       onClick: (evt, elements) => {
         if (elements.length === 0) return;
         const { index, datasetIndex } = elements[0];
@@ -142,7 +130,9 @@ export function render(container, state) {
         labels,
         datasets: [{
           data: subEntries.map(([, count]) => count),
-          backgroundColor: labels.map((l) => applyDim(getCategoricalColorForLabel('subreason', l), state.filters.churnSubreason !== null && l !== state.filters.churnSubreason)),
+          // Shades of the active reason's own color, since every subreason
+          // here belongs to that one reason.
+          backgroundColor: labels.map((l) => applyDim(getSubreasonColor(activeReason, l), state.filters.churnSubreason !== null && l !== state.filters.churnSubreason)),
           borderRadius: 4,
         }],
       },
