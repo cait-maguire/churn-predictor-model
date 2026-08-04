@@ -28,7 +28,7 @@ export function render(container, state) {
   const { labels, values } = sorted.length > HISTOGRAM_THRESHOLD
     ? buildHistogram(sorted)
     : {
-        labels: sorted.map((c) => c.accountName || c.companyNo),
+        labels: sorted.map((c) => c.accountKey),
         values: sorted.map((c) => c.revenue),
       };
 

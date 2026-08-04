@@ -3,7 +3,7 @@
 // so both read from one implementation of the counting/sorting rules.
 
 export function getSegmentValue(customer, fieldKey) {
-  return fieldKey === 'companyNo' ? customer.companyNo : customer.segments[fieldKey]?.value ?? null;
+  return customer.segments[fieldKey]?.value ?? null;
 }
 
 function isBlank(v) {

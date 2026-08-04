@@ -10,7 +10,7 @@ let countChart = null;
 let revenueChart = null;
 
 function getSegmentValue(customer, fieldKey) {
-  return fieldKey === 'companyNo' ? customer.companyNo : customer.segments[fieldKey]?.value ?? null;
+  return customer.segments[fieldKey]?.value ?? null;
 }
 
 export function render(container, state) {

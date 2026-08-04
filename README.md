@@ -44,30 +44,52 @@ node build/smokeTest.mjs
 
 ## What the tool does (Phase 1 scope)
 
-1. **Upload** one case export (`.csv` or `.xlsx`) — one row per case, with
-   account-level fields (Revenue, Service Segment, etc.) repeated across
+1. **Upload** one churn case export (`.csv` or `.xlsx`) — one row per case,
+   with account-level fields (Revenue, Service Market, etc.) repeated across
    every case row for that account.
-2. **Confirm column mapping.** The join key (Company No.) and Revenue are
-   auto-detected by exact/near name match and required; all other fields
-   are auto-suggested but you confirm or override them.
+2. **Confirm column mapping.** The customer key (Account Official Name) and
+   Revenue are auto-detected by exact/near name match and required; all
+   other fields are auto-suggested but you confirm or override them.
 3. **Review the data-quality summary** — row counts at every pipeline
-   stage, blank rows dropped, rows excluded for a missing join key or
-   revenue, and any accounts with inconsistent values across their case
-   rows.
+   stage, blank rows dropped, rows excluded for a missing customer key or
+   revenue, accounts with inconsistent values across their case rows, and
+   account names that map to more than one Salesforce account.
 4. **Explore the dashboard**:
    - total churned customers and revenue lost
    - revenue distribution across individual customers
    - customers/revenue by a segmentation field of your choice
    - churn reason breakdown, with a subreason drill-down
    - combined **segment × churn reason** stacked view
-   - combined **segment × churn subreason** stacked view
 
    Every bar carries a data label with its value, and every chart has a
    legend. Each segment value and churn reason gets its own stable color;
    **subreasons are colored as shades of their parent churn reason**, so
-   related subreasons read as one family (the subreason legend is grouped
-   by parent reason to match). Click any bar, slice, or legend item to
-   cross-filter the rest of the dashboard; click it again to clear.
+   related subreasons read as one family. Click any bar, slice, or legend
+   item to cross-filter the rest of the dashboard; click it again to clear.
+
+### Expected columns
+
+The tool is built against this export format (auto-detected by name; any
+column can be remapped on the mapping screen):
+
+```
+Account Official Name    <- customer key (required)
+Revenue                  <- required
+Open Date
+Case Status              <- churn filter: must equal "Closed"
+Churn Date
+Case Churn Decision      <- segment
+Case Churn Type
+Case Churn Reason
+Case Churn Subreason
+Service Market           <- segment
+Service Team             <- segment
+Service Type             <- segment
+Case Win Back Action
+Case Crm Url
+Account Crm Url          <- used to detect duplicate account names
+Affiliate Crm Url
+```
 
 Out of scope for Phase 1 (by design, for later phases): case-feedback/NPS
 analysis and predictive modeling. The internal pipeline (`src/lib/`) is
@@ -80,20 +102,33 @@ These were either explicitly agreed during the build or are reasonable
 defaults documented here per the original spec's request to flag
 assumptions rather than bury them silently:
 
-- **Revenue conflict / segment-field conflict resolution**: when an
-  account's Revenue or a segment field (Service Segment, Service Type, SD
-  Worx Customer Type, Affiliate, Group-Id) disagrees across that account's
-  case rows, the tool uses the **first non-blank value in original row
-  order** and flags the conflict in the data-quality panel. *(Confirmed
+- **Customers are keyed by Account Official Name.** The current export has
+  no company number, so churned customers are grouped by account name.
+  Because two genuinely different Salesforce accounts could share a name,
+  the tool compares each account name's `Account Crm Url` values and flags
+  any name mapping to more than one Salesforce account in the data-quality
+  panel — check that count before trusting customer totals. *(Confirmed
   with you during the build.)*
-- **Revenue parsing is strict**: plain numbers only, matching the real
-  dummy data (e.g. `119147`) — no currency symbol or thousands-separator
-  handling. If a real export ever uses a different format, values that
-  fail to parse are counted as "missing revenue" rather than silently
-  becoming `0` or crashing. *(Confirmed with you during the build.)*
+- **Churn rule: `Case Status = Closed`.** The export is already a churn
+  report, so no record-type filter is applied; open cases are treated as
+  churn attempts in progress and excluded from every count. `Case Churn
+  Type` (Full/Partial Churn) is parsed and available but does **not**
+  filter anything — partial churn counts as a churned customer. *(Confirmed
+  with you during the build.)*
+- **Revenue conflict / segment-field conflict resolution**: when an
+  account's Revenue or a segment field (Case Churn Decision, Service
+  Market, Service Team, Service Type) disagrees across that account's case
+  rows, the tool uses the **first non-blank value in original row order**
+  and flags the conflict in the data-quality panel. *(Confirmed with you
+  during the build.)*
+- **Revenue parsing is strict**: plain numbers only (e.g. `12345`) — no
+  currency symbol or thousands-separator handling. If a real export ever
+  uses a different format, values that fail to parse are counted as
+  "missing revenue" rather than silently becoming `0` or crashing.
+  *(Confirmed with you during the build.)*
 - **Duplicate churn cases per account** (expected to be rare/an error,
   since one churn case per account is the norm): the tool uses the case
-  with the most recent Termination Date for that account's Churn
+  with the most recent Churn Date for that account's Churn
   Reason/Subreason/Decision/Win Back Action, and flags the account in the
   data-quality panel. No user-facing toggle. *(Confirmed with you during
   the build.)*
@@ -101,12 +136,12 @@ assumptions rather than bury them silently:
   only — no "% of total customer base," since the file isn't guaranteed to
   represent the full non-churned universe. *(Confirmed with you during the
   build.)*
-- **Segmentation fields**: Service Segment, Service Type, SD Worx Customer
-  Type, Affiliate, Group-Id, and Company No. — six fields total, per the
-  spec's "plus Group ID and Company No. if useful as segments."
-- **Case-insensitive matching** is used for `Case Record Type` and
-  `Status` equality checks (e.g. `"closed"` matches `"Closed"`), since real
-  exports may have inconsistent casing.
+- **Segmentation fields**: Service Market, Service Team, Service Type, and
+  Case Churn Decision — four fields total. *(Confirmed with you during the
+  build.)*
+- **Case-insensitive matching** is used for the `Case Status` equality
+  check (e.g. `"closed"` matches `"Closed"`), since real exports may have
+  inconsistent casing.
 - **Blank rows**: a row is treated as entirely blank (dropped, counted
   separately from missing-join-key rows) if every *mapped* field is empty
   — not necessarily every raw column, in case an unmapped column has

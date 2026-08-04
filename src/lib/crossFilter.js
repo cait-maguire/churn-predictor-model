@@ -8,8 +8,7 @@ export function computeFilteredExcluding(state, excludeDims = []) {
 
   return churnedCustomers.filter((customer) => {
     if (!excludeDims.includes('segment') && filters.segmentValue !== null) {
-      const segmentValue = customer.segments[activeSegmentField]?.value ?? customer[activeSegmentField];
-      if (segmentValue !== filters.segmentValue) return false;
+      if ((customer.segments[activeSegmentField]?.value ?? null) !== filters.segmentValue) return false;
     }
     if (!excludeDims.includes('reason') && filters.churnReason !== null) {
       if (customer.canonicalCase.churnReason !== filters.churnReason) return false;

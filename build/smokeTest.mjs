@@ -41,45 +41,44 @@ const overviewText = await page.locator('.overview-widget').innerText();
 const dqText = await page.locator('.data-quality-panel').innerText();
 
 const mustContain = [
-  [overviewText, '12', 'churned customers'],
-  [overviewText, '544,000', 'total revenue lost'],
-  [dqText, '18 total rows parsed', ''],
-  [dqText, '1 entirely blank rows dropped', ''],
+  [overviewText, '11', 'churned customers'],
+  [overviewText, '468,000', 'total revenue lost'],
+  // PapaParse drops fully-empty CSV lines during parsing, so the fixture's
+  // trailing blank row never reaches the blank-row counter (that counter
+  // catches present-but-empty rows, which XLSX exports can contain).
+  [dqText, '17 total rows parsed', ''],
+  [dqText, '0 entirely blank rows dropped', ''],
   [dqText, '15 churn cases found', ''],
-  [dqText, '12 distinct churned customers', ''],
-  [dqText, '2 accounts had more than one churn case', ''],
+  [dqText, '11 distinct churned customers', ''],
+  [dqText, '1 churn case rows excluded', 'missing account key'],
+  [dqText, '1 churn case rows missing a usable Revenue value', ''],
+  [dqText, '3 accounts had more than one churn case', ''],
+  [dqText, 'map to more than one Salesforce account URL', 'duplicate-name detection'],
   [dqText, 'inconsistent Revenue', ''],
-  [dqText, 'inconsistent Service Segment', ''],
+  [dqText, 'inconsistent Service Market', ''],
 ];
 for (const [text, needle, label] of mustContain) {
   if (!text.includes(needle)) throw new Error(`Expected "${needle}" (${label}), got: ${text}`);
 }
 console.log('Data-quality + overview numeric checks: PASS');
 
-// Cross-filter check: click the "SME" bar in the segment count chart, confirm
-// overview narrows from 5 to 4 customers (SME = Acme, Gamma, Delta, Epsilon).
+// Cross-filter check. Clicking a legend item applies the same filter as
+// clicking its bar, and targets by value rather than by canvas coordinates,
+// so this stays correct as the fixture's segment mix changes.
 await page.screenshot({ path: path.join(rootDir, 'build/screenshot-dashboard.png'), fullPage: true });
 
-const segmentCanvas = page.locator('#segment-count-canvas');
-const box = await segmentCanvas.boundingBox();
-// Chart.js draws category bars left-to-right in descending count order; SME
-// (count 4) should be the first/tallest bar. Try a few candidate points
-// within the expected bar column/height until the filter actually applies,
-// since exact plot-area padding isn't known ahead of time.
-let overviewAfterFilter = await page.locator('.overview-widget').innerText();
-const candidates = [
-  [0.30, 0.5], [0.32, 0.6], [0.28, 0.7], [0.35, 0.4], [0.25, 0.8],
-];
-for (const [xf, yf] of candidates) {
-  await page.mouse.click(box.x + box.width * xf, box.y + box.height * yf);
-  await page.waitForTimeout(150);
-  overviewAfterFilter = await page.locator('.overview-widget').innerText();
-  if (overviewAfterFilter.includes('of 12 total')) break;
-}
-console.log('--- Overview after clicking segment bar ---');
+const SEGMENT_UNDER_TEST = '(NL) SME - Netherlands'; // 4 churned customers in the fixture
+await page.locator(`.segment-breakdown-widget [data-legend-value="${SEGMENT_UNDER_TEST}"]`).click();
+await page.waitForTimeout(200);
+
+const overviewAfterFilter = await page.locator('.overview-widget').innerText();
+console.log(`--- Overview after filtering to ${SEGMENT_UNDER_TEST} ---`);
 console.log(overviewAfterFilter);
-if (!overviewAfterFilter.includes('of 12 total')) {
-  throw new Error(`Expected overview to show a filtered subset "of 12 total", got: ${overviewAfterFilter}`);
+if (!overviewAfterFilter.includes('of 11 total')) {
+  throw new Error(`Expected overview to show a filtered subset "of 11 total", got: ${overviewAfterFilter}`);
+}
+if (!overviewAfterFilter.includes('4')) {
+  throw new Error(`Expected 4 churned customers in ${SEGMENT_UNDER_TEST}, got: ${overviewAfterFilter}`);
 }
 
 await page.screenshot({ path: path.join(rootDir, 'build/screenshot-filtered.png'), fullPage: true });

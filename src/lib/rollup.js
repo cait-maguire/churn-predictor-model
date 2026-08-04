@@ -1,7 +1,6 @@
 import { parseRevenue } from './revenueParser.js';
 import { parseDate } from './dateParser.js';
-
-const SEGMENT_KEYS = ['serviceSegment', 'serviceType', 'sdWorxCustomerType', 'affiliate', 'groupId'];
+import { SEGMENT_KEYS } from './fieldCatalog.js';
 
 // Picks the first non-blank value in original row order, per the confirmed
 // conflict-resolution rule. Also reports whether the group actually
@@ -36,9 +35,9 @@ function resolveRevenue(rowsInOrder) {
   };
 }
 
-// Picks the churn case with the latest Termination Date for a given account
-// (the "one churn case per account is the norm" rule) - ties broken by
-// original row order (last one in the file wins), for determinism.
+// Picks the churn case with the latest Churn Date for a given account (the
+// "one churn case per account is the norm" rule) - ties broken by original
+// row order (last one in the file wins), for determinism.
 function pickCanonicalCase(rowsInOrder) {
   let best = null;
   let bestTimestamp = -Infinity;
@@ -51,77 +50,87 @@ function pickCanonicalCase(rowsInOrder) {
     }
   }
   return {
-    caseNb: best.caseNb,
     terminationDate: best.terminationDate,
     terminationTimestamp: bestTimestamp === -Infinity ? null : bestTimestamp,
+    openDate: best.openDate,
+    churnType: best.churnType,
     churnReason: best.churnReason,
     churnSubreason: best.churnSubreason,
-    decision: best.decision,
     winBackAction: best.winBackAction,
+    caseCrmUrl: best.caseCrmUrl,
     __rowIndex: best.__rowIndex,
   };
 }
 
 // Stage 3: churn case rows (Stage 2 output) -> churned-customer records,
-// one per distinct companyNo, plus a report of churn-rollup-specific data
-// quality issues. Rows with a blank/missing companyNo cannot be attributed
-// to an account and are excluded from rollup (counted, never silently
+// one per distinct account key, plus a report of churn-rollup-specific data
+// quality issues. Rows with a blank/missing account key cannot be attributed
+// to a customer and are excluded from rollup (counted, never silently
 // dropped without a visible count).
 export function rollupChurnedCustomers(churnCaseRows) {
-  const excludedMissingJoinKey = [];
+  const excludedMissingKey = [];
   const groups = new Map();
 
   for (const row of churnCaseRows) {
-    if (row.companyNo === null) {
-      excludedMissingJoinKey.push(row);
+    if (row.accountKey === null) {
+      excludedMissingKey.push(row);
       continue;
     }
-    if (!groups.has(row.companyNo)) groups.set(row.companyNo, []);
-    groups.get(row.companyNo).push(row);
+    if (!groups.has(row.accountKey)) groups.set(row.accountKey, []);
+    groups.get(row.accountKey).push(row);
   }
 
   const customers = [];
-  const conflicts = { revenue: [], serviceSegment: [], serviceType: [], sdWorxCustomerType: [], affiliate: [], groupId: [] };
+  const conflicts = { revenue: [] };
+  for (const key of SEGMENT_KEYS) conflicts[key] = [];
   const accountsWithDuplicateChurnCases = [];
+  // Customers are keyed by account *name*, so two genuinely different
+  // Salesforce accounts sharing a name would silently merge into one. When
+  // the export carries account CRM URLs we can detect exactly that.
+  const accountsWithMultipleCrmUrls = [];
   let rowsMissingRevenue = 0;
 
-  for (const [companyNo, rows] of groups) {
+  for (const [accountKey, rows] of groups) {
     const rowsInOrder = [...rows].sort((a, b) => a.__rowIndex - b.__rowIndex);
 
-    const accountName = resolveFirstNonBlank(rowsInOrder, (r) => r.accountName);
     const revenue = resolveRevenue(rowsInOrder);
+    if (revenue.conflict) conflicts.revenue.push(accountKey);
 
     const segments = {};
     for (const key of SEGMENT_KEYS) {
       const resolved = resolveFirstNonBlank(rowsInOrder, (r) => r.segments[key]);
       segments[key] = resolved;
-      if (resolved.conflict) conflicts[key].push(companyNo);
+      if (resolved.conflict) conflicts[key].push(accountKey);
     }
-    if (revenue.conflict) conflicts.revenue.push(companyNo);
+
+    const accountCrmUrl = resolveFirstNonBlank(rowsInOrder, (r) => r.accountCrmUrl);
+    if (accountCrmUrl.conflict) accountsWithMultipleCrmUrls.push(accountKey);
 
     for (const row of rowsInOrder) {
       if (parseRevenue(row.revenueRaw) === null) rowsMissingRevenue += 1;
     }
 
     const hasDuplicateChurnCases = rowsInOrder.length > 1;
-    if (hasDuplicateChurnCases) accountsWithDuplicateChurnCases.push(companyNo);
+    if (hasDuplicateChurnCases) accountsWithDuplicateChurnCases.push(accountKey);
 
     customers.push({
-      companyNo,
-      accountName: accountName.value,
+      accountKey,
+      accountName: accountKey, // the key is the account name in this export
+      accountCrmUrl: accountCrmUrl.value,
       revenue: revenue.value,
       revenueConflict: revenue.conflict,
       segments,
       canonicalCase: pickCanonicalCase(rowsInOrder),
       hasDuplicateChurnCases,
       allCases: rowsInOrder.map((r) => ({
-        caseNb: r.caseNb,
         terminationDate: r.terminationDate,
         terminationTimestamp: parseDate(r.terminationDate),
+        openDate: r.openDate,
+        churnType: r.churnType,
         churnReason: r.churnReason,
         churnSubreason: r.churnSubreason,
-        decision: r.decision,
         winBackAction: r.winBackAction,
+        caseCrmUrl: r.caseCrmUrl,
         __rowIndex: r.__rowIndex,
       })),
     });
@@ -130,10 +139,11 @@ export function rollupChurnedCustomers(churnCaseRows) {
   const report = {
     totalChurnCases: churnCaseRows.length,
     totalChurnedCustomers: customers.length,
-    excludedMissingJoinKeyCount: excludedMissingJoinKey.length,
+    excludedMissingJoinKeyCount: excludedMissingKey.length,
     rowsMissingRevenue,
     conflicts,
     accountsWithDuplicateChurnCases,
+    accountsWithMultipleCrmUrls,
   };
 
   return { customers, report };

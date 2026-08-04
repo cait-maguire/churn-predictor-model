@@ -1,3 +1,5 @@
+import { SEGMENT_KEYS } from './fieldCatalog.js';
+
 // Stage 1: raw rows (Stage 0, keyed by original header text) + a confirmed
 // field map (canonical key -> original header string) -> MappedRow[] with
 // canonical keys. This is the shape Phase 2 (non-churn case analysis) reuses
@@ -16,46 +18,32 @@ function get(row, header) {
 
 // fieldMap: { [canonicalKey]: originalHeaderString | null }
 export function applyMapping(rawRows, fieldMap) {
-  return rawRows.map((row, index) => ({
-    __rowIndex: index,
-    companyNo: get(row, fieldMap.companyNo),
-    revenueRaw: get(row, fieldMap.revenue),
-    caseRecordType: get(row, fieldMap.caseRecordType),
-    status: get(row, fieldMap.status),
-    terminationDate: get(row, fieldMap.terminationDate),
-    churnReason: get(row, fieldMap.churnReason),
-    churnSubreason: get(row, fieldMap.churnSubreason),
-    decision: get(row, fieldMap.decision),
-    winBackAction: get(row, fieldMap.winBackAction),
-    caseNb: get(row, fieldMap.caseNb),
-    accountName: get(row, fieldMap.accountName),
-    segments: {
-      serviceSegment: get(row, fieldMap.serviceSegment),
-      serviceType: get(row, fieldMap.serviceType),
-      sdWorxCustomerType: get(row, fieldMap.sdWorxCustomerType),
-      affiliate: get(row, fieldMap.affiliate),
-      groupId: get(row, fieldMap.groupId),
-    },
-  }));
+  return rawRows.map((row, index) => {
+    const segments = {};
+    for (const key of SEGMENT_KEYS) segments[key] = get(row, fieldMap[key]);
+
+    return {
+      __rowIndex: index,
+      accountKey: get(row, fieldMap.accountKey),
+      revenueRaw: get(row, fieldMap.revenue),
+      status: get(row, fieldMap.status),
+      terminationDate: get(row, fieldMap.terminationDate),
+      openDate: get(row, fieldMap.openDate),
+      churnType: get(row, fieldMap.churnType),
+      churnReason: get(row, fieldMap.churnReason),
+      churnSubreason: get(row, fieldMap.churnSubreason),
+      winBackAction: get(row, fieldMap.winBackAction),
+      caseCrmUrl: get(row, fieldMap.caseCrmUrl),
+      accountCrmUrl: get(row, fieldMap.accountCrmUrl),
+      affiliateCrmUrl: get(row, fieldMap.affiliateCrmUrl),
+      segments,
+    };
+  });
 }
 
 // A row is "entirely blank" if every field we mapped to is empty - these are
-// dropped and counted separately from missing-join-key rows, per the plan.
+// dropped and counted separately from missing-key rows, per the plan.
 export function isBlankRow(mappedRow) {
-  const { __rowIndex, ...fields } = mappedRow;
-  const flat = [
-    fields.companyNo,
-    fields.revenueRaw,
-    fields.caseRecordType,
-    fields.status,
-    fields.terminationDate,
-    fields.churnReason,
-    fields.churnSubreason,
-    fields.decision,
-    fields.winBackAction,
-    fields.caseNb,
-    fields.accountName,
-    ...Object.values(fields.segments),
-  ];
-  return flat.every((v) => v === null);
+  const { __rowIndex, segments, ...fields } = mappedRow;
+  return [...Object.values(fields), ...Object.values(segments)].every((v) => v === null);
 }
