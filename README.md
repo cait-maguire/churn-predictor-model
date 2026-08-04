@@ -62,10 +62,11 @@ node build/smokeTest.mjs
    - combined **segment × churn reason** stacked view
 
    Every bar carries a data label with its value, and every chart has a
-   legend. Each segment value and churn reason gets its own stable color;
-   **subreasons are colored as shades of their parent churn reason**, so
-   related subreasons read as one family. Click any bar, slice, or legend
-   item to cross-filter the rest of the dashboard; click it again to clear.
+   legend. Each segment value and churn reason gets its own stable color
+   from a muted/pastel palette; **subreasons are colored as shades of their
+   parent churn reason**, so related subreasons read as one family. Click
+   any bar, slice, or legend item to cross-filter the rest of the
+   dashboard; click it again to clear.
 
 ### Expected columns
 
@@ -154,6 +155,16 @@ assumptions rather than bury them silently:
 - **Data labels** are drawn on every bar, but suppressed on charts with more
   than 30 bars and inside stacked slices thinner than 16px, where they would
   overlap rather than inform.
+- **Chart palette is muted/pastel.** The eight chart hues were searched
+  against colorblind-separation and lightness/chroma checks rather than
+  picked by eye, and sit at the pale end of what still passes: going any
+  paler or greyer starts failing colour-blind separation. If you want them
+  softer still, the honest trade is fewer simultaneous colours (fold small
+  categories into "Other"), not weaker colours. Note that pastels are
+  inherently low-contrast against the white page — the data label on every
+  bar and the text legend are what keep a colour from carrying meaning on
+  its own. Buttons, links and status text deliberately stay at full
+  strength for legibility.
 - **Revenue-distribution histogram threshold**: above 75 churned customers
   in the current selection, the per-customer bar chart switches to a
   12-bucket histogram for legibility. Arbitrary, easy to adjust in

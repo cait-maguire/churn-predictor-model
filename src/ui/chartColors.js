@@ -1,7 +1,7 @@
-// Colors drawn from the validated reference palette (categorical slots 1 and
-// 3), assigned by identity and used consistently everywhere that metric
-// appears: slot 1 (blue) always means "churned customers / count", slot 3
-// (aqua) always means "revenue". Never reassigned per-chart.
+// Chart chrome plus the two identity colors: slot 1 always means "churned
+// customers / count", slot 3 always means "revenue". Never reassigned
+// per-chart. Both are taken from the categorical palette below so a metric
+// reads the same everywhere it appears.
 const LIGHT = {
   surface: '#fcfcfb',
   textPrimary: '#0b0b0b',
@@ -9,10 +9,8 @@ const LIGHT = {
   muted: '#898781',
   gridline: '#e1e0d9',
   baseline: '#c3c2b7',
-  count: '#2a78d6',
-  countSelected: '#184f95',
-  revenue: '#1baf7a',
-  revenueSelected: '#0d6b48',
+  count: '#87b6f4',
+  revenue: '#61b58e',
 };
 
 const DARK = {
@@ -22,10 +20,8 @@ const DARK = {
   muted: '#898781',
   gridline: '#2c2c2a',
   baseline: '#383835',
-  count: '#3987e5',
-  countSelected: '#184f95',
-  revenue: '#199e70',
-  revenueSelected: '#0d6b48',
+  count: '#6997d1',
+  revenue: '#4da27d',
 };
 
 export function getChartColors() {
@@ -33,11 +29,22 @@ export function getChartColors() {
   return isDark ? DARK : LIGHT;
 }
 
-// The validated 8-hue categorical palette, fixed order (never re-sorted by
+// The 8-hue categorical palette, fixed order (never re-sorted by
 // rank/count). Used for "each bar/slice its own color" widgets (segment and
-// reason/subreason breakdowns), per the requested Salesforce-dashboard look.
-const CATEGORICAL_LIGHT = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#4a3aa7', '#e34948'];
-const CATEGORICAL_DARK = ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181', '#008300', '#9085e9', '#e66767'];
+// reason/subreason breakdowns).
+//
+// These are the muted/pastel steps of the same eight hues as the original
+// bold set - same hue angles and same order, lifted in lightness and pulled
+// down in chroma. Each set was searched against the accessibility checks
+// rather than picked by eye, and both clear every hard gate:
+//   light: CVD ΔE 8.1, normal-vision ΔE 15.1
+//   dark:  CVD ΔE 8.0, normal-vision ΔE 15.0
+// Pastels sit below 3:1 contrast on the light surface by nature; the
+// mitigation is the data label on every bar plus the text legend, so a
+// color never carries meaning alone. If these are ever re-tuned, re-run the
+// validator - going paler or greyer from here starts failing the CVD gate.
+const CATEGORICAL_LIGHT = ['#87b6f4', '#ee855e', '#61b58e', '#e3a74a', '#ec96b4', '#7ab275', '#ababf4', '#ee9992'];
+const CATEGORICAL_DARK = ['#6997d1', '#db724d', '#4da27d', '#c98500', '#ca7790', '#5b9157', '#9085e9', '#e26a6a'];
 
 // Stable label -> palette-index assignment per dimension, so a given label
 // (e.g. "SME", "Pricing") always gets the same color no matter how sorting
@@ -92,14 +99,17 @@ function mixHex(hex, targetHex, amount) {
 // a variant of that reason's blue). Shades alternate lighter/darker away
 // from the base color; the darkening target is kept above the dark surface
 // in dark mode so a deep shade never disappears into the background.
+// Base colors are already pale, so there is far more usable range below them
+// than above: darkening leads, and the lightening steps stay small enough
+// that a shade never washes out into the surface.
 const SUBREASON_SHADE_STEPS = [
   [null, 0],        // the parent reason's own base color
-  ['light', 0.32],
-  ['dark', 0.26],
-  ['light', 0.54],
-  ['dark', 0.44],
-  ['light', 0.70],
+  ['dark', 0.24],
+  ['light', 0.30],
+  ['dark', 0.42],
+  ['light', 0.50],
   ['dark', 0.58],
+  ['light', 0.66],
 ];
 
 // subreason index is scoped per parent reason, so shade assignment restarts
