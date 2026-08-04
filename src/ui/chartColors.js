@@ -9,8 +9,8 @@ const LIGHT = {
   muted: '#898781',
   gridline: '#e1e0d9',
   baseline: '#c3c2b7',
-  count: '#87b6f4',
-  revenue: '#61b58e',
+  count: '#3b82f6',
+  revenue: '#14b8a6',
 };
 
 const DARK = {
@@ -20,8 +20,8 @@ const DARK = {
   muted: '#898781',
   gridline: '#2c2c2a',
   baseline: '#383835',
-  count: '#6997d1',
-  revenue: '#4da27d',
+  count: '#3b82f6',
+  revenue: '#0dab9a',
 };
 
 export function getChartColors() {
@@ -33,18 +33,19 @@ export function getChartColors() {
 // rank/count). Used for "each bar/slice its own color" widgets (segment and
 // reason/subreason breakdowns).
 //
-// These are the muted/pastel steps of the same eight hues as the original
-// bold set - same hue angles and same order, lifted in lightness and pulled
-// down in chroma. Each set was searched against the accessibility checks
-// rather than picked by eye, and both clear every hard gate:
-//   light: CVD ΔE 8.1, normal-vision ΔE 15.1
-//   dark:  CVD ΔE 8.0, normal-vision ΔE 15.0
-// Pastels sit below 3:1 contrast on the light surface by nature; the
-// mitigation is the data label on every bar plus the text legend, so a
-// color never carries meaning alone. If these are ever re-tuned, re-run the
-// validator - going paler or greyer from here starts failing the CVD gate.
-const CATEGORICAL_LIGHT = ['#87b6f4', '#ee855e', '#61b58e', '#e3a74a', '#ec96b4', '#7ab275', '#ababf4', '#ee9992'];
-const CATEGORICAL_DARK = ['#6997d1', '#db724d', '#4da27d', '#c98500', '#ca7790', '#5b9157', '#9085e9', '#e26a6a'];
+// Eight bright, friendly hues - blue, orange, teal, amber, pink, lime,
+// violet, rose. The slot ORDER is not cosmetic: every ordering was scored
+// against the colorblind-separation checks and this one maximises the
+// weakest adjacent pair, so neighbouring slices stay tellable apart.
+//   light: CVD ΔE 14.2, normal-vision ΔE 22.0, tritan 16.5
+//   dark:  CVD ΔE 13.1, normal-vision ΔE 19.1, tritan 10.8
+// The dark set is the same eight hues re-stepped for the dark surface, not
+// a different palette. A few light-mode hues sit below 3:1 against the
+// white page; the data label on every bar plus the text legend are what
+// keep colour from carrying meaning alone. Re-run the validator before
+// changing any of these.
+const CATEGORICAL_LIGHT = ['#3b82f6', '#f97316', '#14b8a6', '#e0a90a', '#ec4899', '#83cb13', '#8b5cf6', '#f43f5e'];
+const CATEGORICAL_DARK = ['#3b82f6', '#e86805', '#0dab9a', '#ba8b0a', '#ec4899', '#6ba804', '#8b5cf6', '#f43f5e'];
 
 // Stable label -> palette-index assignment per dimension, so a given label
 // (e.g. "SME", "Pricing") always gets the same color no matter how sorting
@@ -99,17 +100,17 @@ function mixHex(hex, targetHex, amount) {
 // a variant of that reason's blue). Shades alternate lighter/darker away
 // from the base color; the darkening target is kept above the dark surface
 // in dark mode so a deep shade never disappears into the background.
-// Base colors are already pale, so there is far more usable range below them
-// than above: darkening leads, and the lightening steps stay small enough
-// that a shade never washes out into the surface.
+// Base colors are saturated mid-tones with room in both directions, so the
+// steps alternate lighter/darker away from the base for maximum separation
+// within a family.
 const SUBREASON_SHADE_STEPS = [
   [null, 0],        // the parent reason's own base color
-  ['dark', 0.24],
-  ['light', 0.30],
-  ['dark', 0.42],
-  ['light', 0.50],
-  ['dark', 0.58],
-  ['light', 0.66],
+  ['light', 0.34],
+  ['dark', 0.28],
+  ['light', 0.56],
+  ['dark', 0.46],
+  ['light', 0.72],
+  ['dark', 0.60],
 ];
 
 // subreason index is scoped per parent reason, so shade assignment restarts

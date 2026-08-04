@@ -8,12 +8,14 @@
   --gridline: #e1e0d9;
   --baseline: #c3c2b7;
   --border: rgba(11, 11, 11, 0.10);
-  /* Chart identity colors (muted) - used for swatches and tile accents. */
-  --count: #87b6f4;
-  --revenue: #61b58e;
-  /* Interactive chrome stays at full strength: a pastel behind white button
-     text, or as link text, would not carry enough contrast. */
-  --accent: #2a78d6;
+  /* Chart identity colors - used for swatches and tile accents. */
+  --count: #3b82f6;
+  --revenue: #14b8a6;
+  /* Interactive chrome uses a deeper step of the same blue: the chart blue
+     behind white button text only reaches 3.7:1, below the 4.5:1 needed for
+     body-size text. --accent-text pairs with it per mode. */
+  --accent: #2563eb;
+  --accent-text: #ffffff;
   --success-text: #006300;
   --error: #d03b3b;
   --error-bg: #fdeceb;
@@ -30,9 +32,10 @@
     --gridline: #2c2c2a;
     --baseline: #383835;
     --border: rgba(255, 255, 255, 0.10);
-    --count: #6997d1;
-    --revenue: #4da27d;
-    --accent: #3987e5;
+    --count: #3b82f6;
+    --revenue: #0dab9a;
+    --accent: #60a5fa;
+    --accent-text: #0b0b0b;
     --success-text: #0ca30c;
     --error: #e66767;
     --error-bg: #3a1f1f;
@@ -49,9 +52,10 @@
   --gridline: #2c2c2a;
   --baseline: #383835;
   --border: rgba(255, 255, 255, 0.10);
-  --count: #6997d1;
-  --revenue: #4da27d;
-  --accent: #3987e5;
+  --count: #3b82f6;
+  --revenue: #0dab9a;
+  --accent: #60a5fa;
+  --accent-text: #0b0b0b;
   --success-text: #0ca30c;
   --error: #e66767;
   --error-bg: #3a1f1f;
@@ -131,7 +135,7 @@ h4 { font-size: 0.9rem; margin: 16px 0 8px; color: var(--text-secondary); }
   border: 1px solid var(--border);
   cursor: pointer;
 }
-.btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+.btn-primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-secondary { background: transparent; color: var(--text-primary); }
 .link-btn { background: none; border: none; padding: 0; color: var(--accent); text-decoration: underline; cursor: pointer; font: inherit; }
