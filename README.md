@@ -56,9 +56,13 @@ node build/smokeTest.mjs
    rows.
 4. **Explore the dashboard**: total churned customers and revenue lost, the
    revenue distribution across customers, customers/revenue by a
-   segmentation field of your choice, and a churn reason (with subreason
-   drill-down) breakdown. Click any bar to cross-filter the rest of the
-   dashboard; click it again to clear.
+   segmentation field of your choice, a churn reason (with subreason
+   drill-down) breakdown, and a combined segment-by-reason stacked view
+   (each bar is a segment value, colored slices show its churn reason mix
+   with a customer-count label). Every segment value and every churn
+   reason/subreason gets its own stable color, matched across all widgets.
+   Click any bar or slice to cross-filter the rest of the dashboard; click
+   it again to clear.
 
 Out of scope for Phase 1 (by design, for later phases): case-feedback/NPS
 analysis and predictive modeling. The internal pipeline (`src/lib/`) is

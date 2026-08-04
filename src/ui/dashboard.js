@@ -4,6 +4,7 @@ import { render as renderOverview } from './widgets/overviewWidget.js';
 import { render as renderRevenueDistribution } from './widgets/revenueDistributionWidget.js';
 import { render as renderSegmentBreakdown } from './widgets/segmentBreakdownWidget.js';
 import { render as renderReasonBreakdown } from './widgets/reasonBreakdownWidget.js';
+import { render as renderSegmentReason } from './widgets/segmentReasonWidget.js';
 
 export function renderDashboard(container) {
   container.innerHTML = `
@@ -19,6 +20,7 @@ export function renderDashboard(container) {
         <div id="revenue-distribution-mount"></div>
         <div id="segment-breakdown-mount"></div>
         <div id="reason-breakdown-mount"></div>
+        <div id="segment-reason-mount"></div>
       </div>
     </section>
   `;
@@ -31,6 +33,7 @@ export function renderDashboard(container) {
     revenue: container.querySelector('#revenue-distribution-mount'),
     segment: container.querySelector('#segment-breakdown-mount'),
     reason: container.querySelector('#reason-breakdown-mount'),
+    segmentReason: container.querySelector('#segment-reason-mount'),
   };
 
   rerenderWidgets(mounts);
@@ -44,4 +47,5 @@ export function rerenderWidgets(mounts) {
   renderRevenueDistribution(mounts.revenue, state);
   renderSegmentBreakdown(mounts.segment, state);
   renderReasonBreakdown(mounts.reason, state);
+  renderSegmentReason(mounts.segmentReason, state);
 }

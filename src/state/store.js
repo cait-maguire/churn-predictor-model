@@ -75,6 +75,18 @@ export function toggleFilter(key, value) {
   emit();
 }
 
+// Sets segment + reason together as one atomic action (for the combined
+// segment-by-reason widget, where a single click pins both dimensions at
+// once). Clicking the already-active combination clears both, mirroring
+// toggleFilter's click-again-to-clear behavior.
+export function setSegmentReasonFilter(segmentValue, reason) {
+  const alreadyActive = state.filters.segmentValue === segmentValue && state.filters.churnReason === reason;
+  state.filters.segmentValue = alreadyActive ? null : segmentValue;
+  state.filters.churnReason = alreadyActive ? null : reason;
+  state.filters.churnSubreason = null;
+  emit();
+}
+
 export function resetAll() {
   state.fileInfo = null;
   state.rawRows = null;

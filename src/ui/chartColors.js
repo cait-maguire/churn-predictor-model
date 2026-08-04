@@ -66,15 +66,28 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-// Returns one color per label, stable per dimensionKey. When `selected` is
-// non-null, non-selected labels are dimmed (reduced alpha) rather than
-// recolored, so identity (hue) never changes on click - only emphasis does.
-export function getCategoricalColorsForLabels(dimensionKey, labels, selected = null) {
+// The stable color for one label within one dimension (e.g. dimensionKey
+// 'reason', label 'Pricing'). Exposed directly (not just via the
+// per-labels-array helper below) so widgets that need to combine two
+// dimensions at once (e.g. segment x reason) can look up a single label's
+// color without recomputing a whole array.
+export function getCategoricalColorForLabel(dimensionKey, label) {
   const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   const ramp = isDark ? CATEGORICAL_DARK : CATEGORICAL_LIGHT;
-  return labels.map((label) => {
-    const hex = ramp[getOrAssignIndex(dimensionKey, label)];
-    const dimmed = selected !== null && label !== selected;
-    return dimmed ? hexToRgba(hex, 0.35) : hex;
-  });
+  return ramp[getOrAssignIndex(dimensionKey, label)];
+}
+
+// Dims a color (reduced alpha) rather than recoloring it, so identity (hue)
+// never changes on click/selection - only emphasis does.
+export function applyDim(hex, dimmed) {
+  return dimmed ? hexToRgba(hex, 0.35) : hex;
+}
+
+// Returns one color per label, stable per dimensionKey. When `selected` is
+// non-null, non-selected labels are dimmed rather than recolored.
+export function getCategoricalColorsForLabels(dimensionKey, labels, selected = null) {
+  return labels.map((label) => applyDim(
+    getCategoricalColorForLabel(dimensionKey, label),
+    selected !== null && label !== selected,
+  ));
 }

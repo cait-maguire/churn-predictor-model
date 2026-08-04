@@ -147,6 +147,7 @@ h4 { font-size: 0.9rem; margin: 16px 0 8px; color: var(--text-secondary); }
 
 .widget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 @media (max-width: 860px) { .widget-grid { grid-template-columns: 1fr; } }
+.widget-wide { grid-column: 1 / -1; }
 
 .widget { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
 .widget-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
