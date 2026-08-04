@@ -1,5 +1,5 @@
 import { Chart } from '../chartSetup.js';
-import { getChartColors } from '../chartColors.js';
+import { getChartColors, getCategoricalColorsForLabels } from '../chartColors.js';
 import { computeFilteredExcluding } from '../../lib/crossFilter.js';
 import { toggleFilter } from '../../state/store.js';
 import { escapeHtml, formatNumber } from '../utils.js';
@@ -72,7 +72,7 @@ export function render(container, state) {
         labels,
         datasets: [{
           data: reasonEntries.map(([, count]) => count),
-          backgroundColor: labels.map((l) => (l === state.filters.churnReason ? colors.countSelected : colors.count)),
+          backgroundColor: getCategoricalColorsForLabels('reason', labels, state.filters.churnReason),
           borderRadius: 4,
         }],
       },
@@ -97,7 +97,7 @@ export function render(container, state) {
         labels,
         datasets: [{
           data: subreasonEntries.map(([, count]) => count),
-          backgroundColor: labels.map((l) => (l === state.filters.churnSubreason ? colors.countSelected : colors.count)),
+          backgroundColor: getCategoricalColorsForLabels('subreason', labels, state.filters.churnSubreason),
           borderRadius: 4,
         }],
       },

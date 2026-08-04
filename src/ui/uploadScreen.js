@@ -2,9 +2,14 @@ import { parseFile } from '../lib/parseFile.js';
 import { FIXED_FIELDS, MAPPABLE_FIELDS } from '../lib/fieldCatalog.js';
 import { suggestAllMappings, suggestFixedMapping } from '../lib/mapping.js';
 import { setUploadResult } from '../state/store.js';
+import { resetCategoricalColors } from './chartColors.js';
 import { escapeHtml, formatNumber } from './utils.js';
 
 export function renderUploadScreen(container) {
+  // A fresh upload means an unrelated dataset - clear stable label->color
+  // assignments so old labels don't hold onto colors a new file never uses.
+  resetCategoricalColors();
+
   container.innerHTML = `
     <section class="panel upload-panel">
       <h1>Churn Analysis Dashboard</h1>

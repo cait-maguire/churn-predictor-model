@@ -1,5 +1,5 @@
 import { Chart } from '../chartSetup.js';
-import { getChartColors } from '../chartColors.js';
+import { getChartColors, getCategoricalColorsForLabels } from '../chartColors.js';
 import { computeFilteredExcluding } from '../../lib/crossFilter.js';
 import { SEGMENT_FIELDS } from '../../lib/fieldCatalog.js';
 import { setActiveSegmentField, toggleFilter } from '../../state/store.js';
@@ -71,13 +71,20 @@ export function render(container, state) {
     toggleFilter('segmentValue', labels[elements[0].index]);
   };
 
+  // Each segment value gets its own color from the categorical palette
+  // (stable per label, keyed by the active segment field so switching
+  // fields doesn't mix unrelated label sets) - the same color is used in
+  // both the count and revenue charts so a segment value reads as one
+  // color across both.
+  const barColors = getCategoricalColorsForLabels(`segment:${state.activeSegmentField}`, labels, selected);
+
   countChart = new Chart(container.querySelector('#segment-count-canvas'), {
     type: 'bar',
     data: {
       labels,
       datasets: [{
         data: entries.map(([, v]) => v.count),
-        backgroundColor: labels.map((l) => (l === selected ? colors.countSelected : colors.count)),
+        backgroundColor: barColors,
         borderRadius: 4,
       }],
     },
@@ -96,7 +103,7 @@ export function render(container, state) {
       labels,
       datasets: [{
         data: entries.map(([, v]) => Math.round(v.revenue)),
-        backgroundColor: labels.map((l) => (l === selected ? colors.revenueSelected : colors.revenue)),
+        backgroundColor: barColors,
         borderRadius: 4,
       }],
     },
