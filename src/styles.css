@@ -8,13 +8,13 @@
   --gridline: #e1e0d9;
   --baseline: #c3c2b7;
   --border: rgba(11, 11, 11, 0.10);
-  /* Chart identity colors - used for swatches and tile accents. */
-  --count: #3b82f6;
-  --revenue: #14b8a6;
-  /* Interactive chrome uses a deeper step of the same blue: the chart blue
-     behind white button text only reaches 3.7:1, below the 4.5:1 needed for
-     body-size text. --accent-text pairs with it per mode. */
-  --accent: #2563eb;
+  /* Chart identity colors, from the approved palette. */
+  --count: #74b2f5;
+  --revenue: #8ccc46;
+  /* Interactive chrome uses the palette's deepest blue - the only member
+     dark enough to sit behind white button text. --accent-text pairs with
+     it per mode. */
+  --accent: #4b72ee;
   --accent-text: #ffffff;
   --success-text: #006300;
   --error: #d03b3b;
@@ -32,11 +32,11 @@
     --gridline: #2c2c2a;
     --baseline: #383835;
     --border: rgba(255, 255, 255, 0.10);
-    --count: #3b82f6;
-    --revenue: #0dab9a;
-    --accent: #60a5fa;
+    --count: #74b2f5;
+    --revenue: #8ccc46;
+    --accent: #74b2f5;
     --accent-text: #0b0b0b;
-    --success-text: #0ca30c;
+    --success-text: #8ccc46;
     --error: #e66767;
     --error-bg: #3a1f1f;
   }
@@ -52,11 +52,11 @@
   --gridline: #2c2c2a;
   --baseline: #383835;
   --border: rgba(255, 255, 255, 0.10);
-  --count: #3b82f6;
-  --revenue: #0dab9a;
-  --accent: #60a5fa;
+  --count: #74b2f5;
+  --revenue: #8ccc46;
+  --accent: #74b2f5;
   --accent-text: #0b0b0b;
-  --success-text: #0ca30c;
+  --success-text: #8ccc46;
   --error: #e66767;
   --error-bg: #3a1f1f;
 }

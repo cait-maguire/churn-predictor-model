@@ -154,17 +154,31 @@ assumptions rather than bury them silently:
 - **Data labels** are drawn on every bar, but suppressed on charts with more
   than 30 bars and inside stacked slices thinner than 16px, where they would
   overlap rather than inform.
-- **Chart palette**: eight bright hues — blue, orange, teal, amber, pink,
-  lime, violet, rose. The slot *order* is not cosmetic: every possible
-  ordering was scored against the colour-blind separation checks and this
-  one maximises the weakest adjacent pair, so neighbouring stacked slices
-  stay tellable apart (CVD ΔE 14.2 light / 13.1 dark). Dark mode uses the
-  same eight hues re-stepped for the dark surface. A few hues sit below
-  3:1 against the white page, so the per-bar data labels and text legend
-  are what keep colour from carrying meaning alone. Buttons and links use
-  a deeper step of the chart blue, since the chart blue behind white
-  button text falls below the contrast needed for body-size text. Re-run
-  `scripts/validate_palette.js` if these are ever changed.
+- **Chart palette is a fixed, approved set of 14 colours** (see
+  `src/ui/chartColors.js`). Nothing outside that list is ever drawn — no
+  generated tints or shades — in either light or dark mode.
+  - **Eight of the fourteen carry the categorical series.** Both which
+    eight, and their order, were chosen by scoring options against the
+    colour-blind separation checks (adjacent CVD ΔE 13.6, normal-vision
+    21.0), with the extra constraint that the first five slots come from
+    five different hue families. Most charts here show four to six
+    categories, and a purely separation-optimal order front-loaded three
+    blues — it measured fine but looked muddled.
+  - **Five are held back for subreason drill-downs**: pale pink, sand,
+    peach, light lime and mint sit at 1.3–1.6:1 against a white card, too
+    faint to carry a whole series. They appear only in drill-downs, where
+    there are few bars and each is labelled.
+  - **Subreasons use other members of their parent reason's hue family**
+    rather than generated tints, so a reason's subreasons still read as
+    one family while staying inside the approved set. A reason with more
+    subreasons than its family has members falls through to the rest of
+    the palette.
+  - **Caveat worth knowing**: these are light tones, so most sit below the
+    3:1 contrast guideline against the white page. The per-bar data labels
+    and the text legend are what keep colour from carrying meaning alone.
+    Buttons and links use the palette's deepest blue (`#4b72ee`), the only
+    member dark enough to sit behind white button text, and even that is
+    marginally under the usual threshold for body-size text.
 - **Revenue-distribution histogram threshold**: above 75 churned customers
   in the current selection, the per-customer bar chart switches to a
   12-bucket histogram for legibility. Arbitrary, easy to adjust in

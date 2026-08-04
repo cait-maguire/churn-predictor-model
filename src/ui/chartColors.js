@@ -1,7 +1,57 @@
-// Chart chrome plus the two identity colors: slot 1 always means "churned
-// customers / count", slot 3 always means "revenue". Never reassigned
-// per-chart. Both are taken from the categorical palette below so a metric
-// reads the same everywhere it appears.
+// ---------------------------------------------------------------------------
+// The approved palette. Every colour the charts draw comes from this list and
+// nothing else, in both light and dark mode.
+//
+// Grouped into hue families, because subreasons are coloured using other
+// members of their parent reason's family (see getSubreasonColor) rather than
+// by generating lighter/darker tints - generating tints would invent colours
+// outside the approved set.
+//
+// Within each family, members are listed strongest-first (by contrast against
+// a white card), so the faintest tones are only reached when a reason has
+// three or more subreasons.
+// ---------------------------------------------------------------------------
+const FAMILIES = [
+  { name: 'blue', members: ['#4b72ee', '#7b8eed', '#74b2f5'] },       // royal, periwinkle, sky
+  { name: 'purple', members: ['#9b4eea', '#c08fee'] },                 // violet, orchid
+  { name: 'pink', members: ['#f0899e', '#f49be2', '#f5d3ef'] },        // salmon rose, orchid pink, pale pink
+  { name: 'green', members: ['#8ccc46', '#78e294', '#c4ef9b'] },       // apple, mint, light lime
+  { name: 'orange', members: ['#f0a05a', '#f3c89a', '#efd79b'] },      // orange, peach, sand
+];
+
+const ALL_PALETTE = FAMILIES.flatMap((f) => f.members);
+
+// The eight categorical slots, in a fixed order (never re-sorted by rank).
+// Both the subset and the order were chosen by scoring options against the
+// colour-blind separation checks (adjacent CVD ΔE 13.6, normal-vision 21.0),
+// under one extra constraint: the first five slots come from five DIFFERENT
+// hue families. Most charts here show four to six categories, and a purely
+// separation-optimal order front-loaded three blues, which measured fine but
+// looked muddled. Leading with blue also keeps slot 1 matching the "churned
+// customers" identity colour used on the stat tile.
+//
+// Five of the fourteen palette colours (pale pink, sand, peach, light lime,
+// mint) are too faint against a white card to carry a whole series - 1.3-1.6:1
+// contrast - so they are held back for subreason drill-downs, where there are
+// few bars and every one carries a data label.
+//
+// The same hexes serve both light and dark mode: they are light tones, so
+// they sit comfortably above 3:1 on the dark surface, and re-stepping them
+// for dark would mean inventing colours outside the approved set.
+const CATEGORICAL = [
+  '#74b2f5', // sky blue
+  '#f0a05a', // orange
+  '#9b4eea', // violet
+  '#8ccc46', // apple green
+  '#f49be2', // orchid pink
+  '#4b72ee', // royal blue
+  '#f0899e', // salmon rose
+  '#7b8eed', // periwinkle
+];
+
+// Chart chrome. The two identity colours - slot 1 always means "churned
+// customers / count", apple green always means "revenue" - are drawn from
+// the palette and never reassigned per chart.
 const LIGHT = {
   surface: '#fcfcfb',
   textPrimary: '#0b0b0b',
@@ -9,8 +59,8 @@ const LIGHT = {
   muted: '#898781',
   gridline: '#e1e0d9',
   baseline: '#c3c2b7',
-  count: '#3b82f6',
-  revenue: '#14b8a6',
+  count: '#74b2f5',
+  revenue: '#8ccc46',
 };
 
 const DARK = {
@@ -20,8 +70,8 @@ const DARK = {
   muted: '#898781',
   gridline: '#2c2c2a',
   baseline: '#383835',
-  count: '#3b82f6',
-  revenue: '#0dab9a',
+  count: '#74b2f5',
+  revenue: '#8ccc46',
 };
 
 export function getChartColors() {
@@ -29,31 +79,13 @@ export function getChartColors() {
   return isDark ? DARK : LIGHT;
 }
 
-// The 8-hue categorical palette, fixed order (never re-sorted by
-// rank/count). Used for "each bar/slice its own color" widgets (segment and
-// reason/subreason breakdowns).
-//
-// Eight bright, friendly hues - blue, orange, teal, amber, pink, lime,
-// violet, rose. The slot ORDER is not cosmetic: every ordering was scored
-// against the colorblind-separation checks and this one maximises the
-// weakest adjacent pair, so neighbouring slices stay tellable apart.
-//   light: CVD ΔE 14.2, normal-vision ΔE 22.0, tritan 16.5
-//   dark:  CVD ΔE 13.1, normal-vision ΔE 19.1, tritan 10.8
-// The dark set is the same eight hues re-stepped for the dark surface, not
-// a different palette. A few light-mode hues sit below 3:1 against the
-// white page; the data label on every bar plus the text legend are what
-// keep colour from carrying meaning alone. Re-run the validator before
-// changing any of these.
-const CATEGORICAL_LIGHT = ['#3b82f6', '#f97316', '#14b8a6', '#e0a90a', '#ec4899', '#83cb13', '#8b5cf6', '#f43f5e'];
-const CATEGORICAL_DARK = ['#3b82f6', '#e86805', '#0dab9a', '#ba8b0a', '#ec4899', '#6ba804', '#8b5cf6', '#f43f5e'];
-
-// Stable label -> palette-index assignment per dimension, so a given label
-// (e.g. "SME", "Pricing") always gets the same color no matter how sorting
-// or the currently-visible set of other labels changes across renders/
-// filters ("color follows the entity, never its rank"). Cycles past 8
-// distinct labels (repeats colors) rather than failing, since fields like
-// Churn Reason can plausibly have more than 8 values in real data.
+// Stable label -> slot assignment per dimension, so a given label (e.g. "SME",
+// "Pricing") always keeps its colour no matter how sorting or the visible set
+// of other labels changes ("colour follows the entity, never its rank").
+// Cycles past 8 distinct labels rather than failing, since a field like Churn
+// Reason can plausibly have more than eight values.
 const labelColorIndex = new Map(); // dimensionKey -> Map<label, index>
+const subreasonIndexByReason = new Map(); // reason -> Map<subreason, index>
 
 export function resetCategoricalColors() {
   labelColorIndex.clear();
@@ -63,59 +95,42 @@ export function resetCategoricalColors() {
 function getOrAssignIndex(dimensionKey, label) {
   if (!labelColorIndex.has(dimensionKey)) labelColorIndex.set(dimensionKey, new Map());
   const dimMap = labelColorIndex.get(dimensionKey);
-  if (!dimMap.has(label)) dimMap.set(label, dimMap.size % CATEGORICAL_LIGHT.length);
+  if (!dimMap.has(label)) dimMap.set(label, dimMap.size % CATEGORICAL.length);
   return dimMap.get(label);
+}
+
+export function getCategoricalColorForLabel(dimensionKey, label) {
+  return CATEGORICAL[getOrAssignIndex(dimensionKey, label)];
 }
 
 function hexToRgba(hex, alpha) {
   const n = parseInt(hex.slice(1), 16);
-  const r = (n >> 16) & 255;
-  const g = (n >> 8) & 255;
-  const b = n & 255;
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
 }
 
-function hexToRgb(hex) {
-  const n = parseInt(hex.slice(1), 16);
-  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+// Dims a colour rather than recolouring it, so identity (hue) never changes
+// on click/selection - only emphasis does.
+export function applyDim(hex, dimmed) {
+  return dimmed ? hexToRgba(hex, 0.35) : hex;
 }
 
-function rgbToHex({ r, g, b }) {
-  const to2 = (v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
-  return `#${to2(r)}${to2(g)}${to2(b)}`;
+export function getCategoricalColorsForLabels(dimensionKey, labels, selected = null) {
+  return labels.map((label) => applyDim(
+    getCategoricalColorForLabel(dimensionKey, label),
+    selected !== null && label !== selected,
+  ));
 }
 
-function mixHex(hex, targetHex, amount) {
-  const a = hexToRgb(hex);
-  const b = hexToRgb(targetHex);
-  return rgbToHex({
-    r: a.r + (b.r - a.r) * amount,
-    g: a.g + (b.g - a.g) * amount,
-    b: a.b + (b.b - a.b) * amount,
-  });
+// Subreasons take other members of their parent reason's hue family, so a
+// reason's subreasons still read as one family - without inventing any colour
+// outside the approved palette. A reason with more subreasons than its family
+// has members falls through to the rest of the palette, skipping colours the
+// family already used.
+function familyOrderFor(parentColor) {
+  const family = FAMILIES.find((f) => f.members.includes(parentColor));
+  const head = family ? [parentColor, ...family.members.filter((m) => m !== parentColor)] : [parentColor];
+  return [...head, ...ALL_PALETTE.filter((c) => !head.includes(c))];
 }
-
-// Subreasons are colored as shades of their parent reason's hue, so the
-// relationship reads visually (e.g. every "Service Experience" subreason is
-// a variant of that reason's blue). Shades alternate lighter/darker away
-// from the base color; the darkening target is kept above the dark surface
-// in dark mode so a deep shade never disappears into the background.
-// Base colors are saturated mid-tones with room in both directions, so the
-// steps alternate lighter/darker away from the base for maximum separation
-// within a family.
-const SUBREASON_SHADE_STEPS = [
-  [null, 0],        // the parent reason's own base color
-  ['light', 0.34],
-  ['dark', 0.28],
-  ['light', 0.56],
-  ['dark', 0.46],
-  ['light', 0.72],
-  ['dark', 0.60],
-];
-
-// subreason index is scoped per parent reason, so shade assignment restarts
-// for each reason's own list of subreasons.
-const subreasonIndexByReason = new Map(); // reason -> Map<subreason, index>
 
 function getSubreasonIndex(reason, subreason) {
   if (!subreasonIndexByReason.has(reason)) subreasonIndexByReason.set(reason, new Map());
@@ -125,42 +140,11 @@ function getSubreasonIndex(reason, subreason) {
 }
 
 export function getSubreasonColor(reason, subreason) {
-  const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  // A subreason with no known parent reason falls back to its own
-  // categorical slot rather than borrowing an unrelated reason's hue.
+  // A subreason with no known parent reason falls back to its own categorical
+  // slot rather than borrowing an unrelated reason's hue.
   if (reason === null || reason === undefined || reason === '') {
     return getCategoricalColorForLabel('subreason', subreason);
   }
-  const base = getCategoricalColorForLabel('reason', reason);
-  const [direction, amount] = SUBREASON_SHADE_STEPS[getSubreasonIndex(reason, subreason) % SUBREASON_SHADE_STEPS.length];
-  if (direction === null) return base;
-  if (direction === 'light') return mixHex(base, '#ffffff', amount);
-  // Darkening target differs by mode so dark-mode shades stay off the surface.
-  return mixHex(base, isDark ? '#4a4a46' : '#141413', isDark ? Math.min(amount, 0.4) : amount);
-}
-
-// The stable color for one label within one dimension (e.g. dimensionKey
-// 'reason', label 'Pricing'). Exposed directly (not just via the
-// per-labels-array helper below) so widgets that need to combine two
-// dimensions at once (e.g. segment x reason) can look up a single label's
-// color without recomputing a whole array.
-export function getCategoricalColorForLabel(dimensionKey, label) {
-  const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const ramp = isDark ? CATEGORICAL_DARK : CATEGORICAL_LIGHT;
-  return ramp[getOrAssignIndex(dimensionKey, label)];
-}
-
-// Dims a color (reduced alpha) rather than recoloring it, so identity (hue)
-// never changes on click/selection - only emphasis does.
-export function applyDim(hex, dimmed) {
-  return dimmed ? hexToRgba(hex, 0.35) : hex;
-}
-
-// Returns one color per label, stable per dimensionKey. When `selected` is
-// non-null, non-selected labels are dimmed rather than recolored.
-export function getCategoricalColorsForLabels(dimensionKey, labels, selected = null) {
-  return labels.map((label) => applyDim(
-    getCategoricalColorForLabel(dimensionKey, label),
-    selected !== null && label !== selected,
-  ));
+  const order = familyOrderFor(getCategoricalColorForLabel('reason', reason));
+  return order[getSubreasonIndex(reason, subreason) % order.length];
 }
