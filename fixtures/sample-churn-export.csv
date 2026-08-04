@@ -1,0 +1,12 @@
+Account Name: Reference Affiliate: Company No.,Case Record Type,CaseSafeId,Account Name: Reference Affiliate: Group - Id,Account Name,Service Segment,Service Type,Account Name: Reference Affiliate: Start Date,Account Name : SD Worx Customer Type,Affiliate,Case Nb,Status,Termination Date,Churn Reason,Churn Subreason,Decision,Win Back Action,Revenue
+10000001,Churn,CASE0001A,GRP-A1,Acme Corp,SME,CPS,1/15/2018,Domestic,111111,90000001,Closed,1/10/2025,Pricing,Too expensive/no value for money,Left,,50000
+10000002,Churn,CASE0002A,GRP-B1,Beta Ltd,CET,MPS,3/22/2015,International,222222,90000002,Closed,2/1/2025,Service Experience,Incorrect calculations or advice,Left,Call/Visit,30000
+10000002,Churn,CASE0002B,GRP-B1,Beta Ltd,CET,MPS,3/22/2015,International,222222,90000003,Closed,3/15/2025,Contact Experience,Availability and responsiveness,Left,Call/Visit,30000
+10000003,Churn,CASE0003A,GRP-C1,Gamma Inc,SME,Payroll BPO,6/5/2010,Domestic,333333,90000004,Closed,1/5/2025,Value Proposition,Too expensive/no value for money,Left,,40000
+10000003,Churn,CASE0003B,GRP-C1,Gamma Inc,CET,Payroll BPO,6/5/2010,Domestic,333333,90000005,Closed,1/20/2025,Value Proposition,Too expensive/no value for money,Left,,45000
+10000004,Churn,CASE0004A,GRP-D1,Delta Co,SME,CPS,9/9/2012,Domestic,444444,90000006,Closed,4/2/2025,Service Experience,Incorrect calculations or advice,Left,,
+10000005,churn,CASE0005A,GRP-E1,Epsilon LLC,SME,MPS,7/7/2019,Domestic,555555,90000007,closed,5/5/2025,Contact Experience,Availability and responsiveness,Left,Call/Visit,62000
+10000006,Support,CASE0006A,GRP-F1,Zeta Group,CET,CPS,2/2/2016,International,666666,90000008,Closed,,,,,,
+10000007,Churn,CASE0007A,GRP-G1,Eta Systems,SME,Payroll BPO,8/8/2020,Domestic,777777,90000009,Open,,,,,,
+,Churn,CASE0008A,GRP-H1,Theta Partners,SME,CPS,10/10/2013,Domestic,888888,90000010,Closed,6/6/2025,Pricing,Too expensive/no value for money,Left,,15000
+,,ORPHAN0009,,,,,,,,,,,,,,,

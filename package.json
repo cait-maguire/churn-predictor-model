@@ -1,0 +1,18 @@
+{
+  "name": "churn-predictor-model",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline churn analysis dashboard (Phase 1) - single-file HTML tool for analyzing Salesforce churn exports",
+  "type": "module",
+  "scripts": {
+    "build": "node build/build.mjs",
+    "verify": "node build/verifyOffline.mjs"
+  },
+  "devDependencies": {
+    "chart.js": "^4.5.1",
+    "esbuild": "^0.28.1",
+    "papaparse": "^5.5.4",
+    "playwright": "^1.62.1",
+    "xlsx": "^0.18.5"
+  }
+}
