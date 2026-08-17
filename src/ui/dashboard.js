@@ -1,6 +1,5 @@
 import { getState, resetAll } from '../state/store.js';
 import { renderDataQualityPanel } from './dataQualityPanel.js';
-import { renderTrainingTablePanel, preserveOpenState } from './trainingTablePanel.js';
 import { render as renderOverview } from './widgets/overviewWidget.js';
 import { render as renderRevenueDistribution } from './widgets/revenueDistributionWidget.js';
 import { render as renderSegmentBreakdown } from './widgets/segmentBreakdownWidget.js';
@@ -16,7 +15,6 @@ export function renderDashboard(container) {
       </div>
       <p class="session-notice">Nothing here is saved. Closing or refreshing this page clears all data.</p>
       <div id="data-quality-mount"></div>
-      <div id="training-table-mount"></div>
       <div class="widget-grid">
         <div id="overview-mount"></div>
         <div id="revenue-distribution-mount"></div>
@@ -31,7 +29,6 @@ export function renderDashboard(container) {
 
   const mounts = {
     dq: container.querySelector('#data-quality-mount'),
-    trainingTable: container.querySelector('#training-table-mount'),
     overview: container.querySelector('#overview-mount'),
     revenue: container.querySelector('#revenue-distribution-mount'),
     segment: container.querySelector('#segment-breakdown-mount'),
@@ -46,7 +43,6 @@ export function renderDashboard(container) {
 export function rerenderWidgets(mounts) {
   const state = getState();
   renderDataQualityPanel(mounts.dq, state);
-  preserveOpenState(mounts.trainingTable, () => renderTrainingTablePanel(mounts.trainingTable, state));
   renderOverview(mounts.overview, state);
   renderRevenueDistribution(mounts.revenue, state);
   renderSegmentBreakdown(mounts.segment, state);

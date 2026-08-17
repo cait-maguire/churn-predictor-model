@@ -6,9 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "node build/build.mjs",
-    "verify": "node build/verifyOffline.mjs",
-    "test": "node build/trainingTableTest.mjs",
-    "smoke": "node build/smokeTest.mjs"
+    "verify": "node build/verifyOffline.mjs"
   },
   "devDependencies": {
     "chart.js": "^4.5.1",

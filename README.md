@@ -91,13 +91,10 @@ Account Crm Url          <- used to detect duplicate account names
 Affiliate Crm Url
 ```
 
-5. **Export a training table** (see below) — an account-month supervised
-   learning table built from the same file, downloadable as CSV.
-
-Out of scope (by design, for later phases): case-feedback/NPS analysis, and
-model training itself — this tool produces the training table, it does not
-fit a model. The internal pipeline (`src/lib/`) is staged (parse → map →
-filter → rollup → training table) so those can be added without a rewrite.
+Out of scope for Phase 1 (by design, for later phases): case-feedback/NPS
+analysis and predictive modeling. The internal pipeline (`src/lib/`) is
+staged (parse → map → filter → rollup) specifically so those can be added
+without a rewrite.
 
 ## Assumptions made (please confirm or correct)
 
@@ -193,114 +190,6 @@ assumptions rather than bury them silently:
   this tool only parses files you choose to open locally (never untrusted
   network input), the practical risk is low, but it's worth knowing if you
   ever consider a stricter security posture for this tool.
-
-## Training table export (account-month)
-
-The dashboard also builds `ml_churn_account_month_v1` — a supervised
-learning table at account-month grain — from the same uploaded file, and
-offers it as a CSV download. It runs entirely in the browser: the file
-never leaves your machine, and nothing is written to disk except the CSV
-you explicitly save.
-
-Open the **Training table export** panel on the dashboard, adjust the
-options, and click download.
-
-### Grain, features and label
-
-- **One row per account per month end** (`as_of_month`).
-- **Features use only records dated on or before `as_of_month`.** Trailing
-  windows are half-open — `open_dt > as_of − N days AND open_dt <= as_of` —
-  so a case opened exactly on the cutoff counts and one opened the next day
-  does not. Service attributes come from the most recent case at or before
-  the cutoff, never from the account's latest-ever row.
-- **`label_left_90d = 1`** when the account has a `Case Status = Closed`,
-  `Case Churn Decision = Left` case whose Churn Date falls in
-  `(as_of_month, as_of_month + 90 days]` — strictly after the cutoff,
-  inclusive of day 90. `label_left_rev_90d` carries the account's revenue on
-  positive rows and 0 elsewhere.
-- **Day arithmetic goes through the calendar, not `n × 86400000`.** Adding
-  90 fixed-length days across a DST boundary lands on 23:00 the previous
-  day, which silently moves a churn dated exactly on the horizon out of the
-  window — so an analyst in Amsterdam would get different labels than one
-  in UTC. `build/trainingTableTest.mjs` pins both DST directions.
-- **`split`** is time-based, with an embargo: a row whose 90-day label
-  window crosses a split boundary shares its outcome period with the next
-  split, so it is marked `embargo` and belongs to neither.
-
-### Three things to know before training on it
-
-These are properties of the export, not bugs in the builder, and the panel
-restates them against your actual numbers:
-
-1. **There are no true negatives.** The export is a churn report, so every
-   account in it churned. The rows labelled 0 are months *before* a churn,
-   not customers who stayed. A model trained here estimates *when*, not
-   *whether*, and cannot be scored against the live customer base. Fixing
-   this needs a source listing all customers, churned or not.
-2. **The features are largely built from the case that creates the label.**
-   A churn case's Open Date precedes its Churn Date, so at a cutoff inside
-   the horizon that case is usually already open — and `cases_30d`,
-   `svc_exp_cases_180d` and the rest are counting it. This passes the
-   cutoff rule and is still a label proxy. The `labeling_case_open_at_cutoff`
-   column marks exactly which rows it affects, and the panel reports the
-   share. On the sample fixture it is 100%. Until there is a source of
-   general (non-churn) case activity, this table is better understood as a
-   save-desk dataset — *will this open case end in a churn* — than as early
-   warning.
-3. **Revenue is an account attribute, not a per-case amount.** The blueprint's
-   `revenue_hist_90d` / `revenue_hist_365d` would sum the same account
-   figure once per case in the window, producing a scaled case count wearing
-   a revenue label. Those columns are deliberately not emitted; a single
-   `account_revenue` is, taken from the latest case at or before the cutoff.
-
-### Columns
-
-Stable in every export: `account_id`, `account_name`, `as_of_month`,
-`service_market`, `service_type`, `service_team`, `segment_size`,
-`market_country_code`, `account_revenue`, `days_since_last_case`,
-`cases_30d/90d/180d/365d`, `left_cases_365d`,
-`service_type_blank_rate_180d`, `label_left_90d`, `label_left_rev_90d`,
-`labeling_case_open_at_cutoff`, `label_window_complete`, `split`.
-
-The reason/subreason flag columns depend on the vocabulary in your file. A
-hardcoded reason string that matches nothing produces a column of zeros
-that looks like a real feature, so instead: the named spec columns
-(`svc_exp_cases_180d`, `bankruptcy_cases_365d`, …) are matched
-case-insensitively against the values actually present, any observed value
-no spec column claims gets an auto-generated `reason_*` / `subreason_*`
-column at both 180d and 365d, and spec columns that matched nothing are
-**omitted and listed in the panel** rather than shipped as zeros.
-
-### Assumptions specific to this table
-
-- **`account_id` is the Account CRM URL**, falling back to the account name
-  when the URL is blank. The export has no account ID column, and the URL is
-  the closest thing to a real key; the panel counts how many accounts fell
-  back to a name.
-- **Accounts enter the spine at their first observed case.** Before that
-  there is no evidence they were a customer, and an all-null feature row
-  labelled 0 is noise rather than a negative.
-- **Accounts leave the spine once they churn** (toggleable). Note this makes
-  `left_cases_365d` structurally zero except for accounts with more than one
-  churn case, since an account's own churn is never in its own past.
-- **Rows whose label window extends past the file's latest date are dropped**
-  (toggleable) as right-censored — a churn that has not been exported yet
-  would otherwise be scored as a negative, which is a wrong label rather
-  than a missing one.
-- **Open cases count as activity signal but never as a label.** The
-  dashboard counts only `Case Status = Closed`; an open case is still real
-  activity at a cutoff that precedes its closure, so features see every case
-  and only the label applies the status rule.
-- **The market filter is applied per account, not per case**, so filtering
-  cannot split one account's history in half. It defaults to `Netherlands`
-  per the v1 plan; clear it for all markets.
-
-### Tests
-
-```
-npm test        # boundary tests for the cutoff, label window, splits, censoring
-npm run smoke   # drives the built HTML in a real browser (needs Playwright)
-```
 
 ## Project layout
 
