@@ -1,0 +1,121 @@
+Client,Survey Reference,Response Date,NPS Score,Primary Driver,Segment,Market,Account Manager
+Client A1,NPS-5000,12/14/2025,3,Pricing,Enterprise,Netherlands,D. Schmidt
+Client B1,NPS-5001,07/15/2025,3,Onboarding experience,Enterprise,Germany,A. de Vries
+Client C1,NPS-5002,11/12/2025,6,Feature range,SMB,Netherlands,A. de Vries
+Client D1,NPS-5003,02/09/2025,9,Product reliability,SMB,Belgium,B. Janssen
+Client E1,NPS-5004,02/24/2025,8,Onboarding experience,Mid-Market,Germany,C. Mercier
+Client F1,NPS-5005,05/06/2025,4,Pricing,Enterprise,United Kingdom,C. Mercier
+Client G1,NPS-5006,03/05/2025,9,Support responsiveness,Mid-Market,Belgium,D. Schmidt
+Client H1,NPS-5007,11/14/2025,7,Pricing,Mid-Market,Germany,C. Mercier
+Client I1,NPS-5008,08/05/2025,5,Onboarding experience,Enterprise,United Kingdom,D. Schmidt
+Client J1,NPS-5009,07/30/2025,6,Product reliability,Mid-Market,United Kingdom,B. Janssen
+Client K1,NPS-5010,02/27/2025,8,Onboarding experience,SMB,Netherlands,D. Schmidt
+Client L1,NPS-5011,03/04/2025,8,Support responsiveness,SMB,Germany,C. Mercier
+Client M1,NPS-5012,02/28/2025,3,Onboarding experience,Enterprise,United Kingdom,B. Janssen
+Client N1,NPS-5013,09/18/2025,6,Support responsiveness,Mid-Market,Belgium,A. de Vries
+Client O1,NPS-5014,03/04/2025,4,Pricing,Enterprise,Netherlands,A. de Vries
+Client P1,NPS-5015,12/03/2025,8,Feature range,SMB,United Kingdom,D. Schmidt
+Client Q1,NPS-5016,05/13/2025,8,Feature range,SMB,Netherlands,B. Janssen
+Client R1,NPS-5017,08/20/2025,4,Feature range,Enterprise,Germany,B. Janssen
+Client S1,NPS-5018,03/10/2025,8,Pricing,Mid-Market,Belgium,D. Schmidt
+Client T1,NPS-5019,03/04/2025,8,Feature range,Mid-Market,Germany,B. Janssen
+Client U1,NPS-5020,05/28/2025,9,Product reliability,Mid-Market,Belgium,B. Janssen
+Client V1,NPS-5021,08/18/2025,6,Onboarding experience,Enterprise,Netherlands,A. de Vries
+Client W1,NPS-5022,04/02/2025,7,Onboarding experience,SMB,Netherlands,D. Schmidt
+Client X1,NPS-5023,09/07/2025,5,Onboarding experience,Mid-Market,Belgium,D. Schmidt
+Client Y1,NPS-5024,04/29/2025,6,Onboarding experience,Enterprise,Netherlands,D. Schmidt
+Client Z1,NPS-5025,07/08/2025,5,Onboarding experience,Enterprise,United Kingdom,A. de Vries
+Client A2,NPS-5026,04/07/2025,7,Feature range,Mid-Market,Germany,C. Mercier
+Client B2,NPS-5027,07/06/2025,6,Onboarding experience,Mid-Market,Belgium,B. Janssen
+Client C2,NPS-5028,06/26/2025,9,Product reliability,SMB,Netherlands,D. Schmidt
+Client D2,NPS-5029,07/31/2025,7,Product reliability,SMB,United Kingdom,C. Mercier
+Client E2,NPS-5030,12/01/2025,9,Onboarding experience,SMB,Netherlands,D. Schmidt
+Client F2,NPS-5031,11/22/2025,5,Onboarding experience,Mid-Market,Netherlands,A. de Vries
+Client G2,NPS-5032,02/11/2025,7,Product reliability,SMB,United Kingdom,A. de Vries
+Client H2,NPS-5033,07/25/2025,7,Onboarding experience,Mid-Market,Netherlands,B. Janssen
+Client I2,NPS-5034,11/01/2025,9,Feature range,SMB,Belgium,B. Janssen
+Client J2,NPS-5035,03/18/2025,6,Onboarding experience,Enterprise,Netherlands,B. Janssen
+Client K2,NPS-5036,10/03/2025,7,Product reliability,SMB,Belgium,A. de Vries
+Client L2,NPS-5037,06/20/2025,8,Support responsiveness,SMB,Germany,D. Schmidt
+Client M2,NPS-5038,12/01/2025,6,Onboarding experience,Mid-Market,United Kingdom,D. Schmidt
+Client N2,NPS-5039,11/26/2025,7,Onboarding experience,Mid-Market,Belgium,C. Mercier
+Client O2,NPS-5040,07/05/2025,9,Pricing,Mid-Market,Belgium,D. Schmidt
+Client P2,NPS-5041,02/16/2025,9,Feature range,Mid-Market,Germany,D. Schmidt
+Client Q2,NPS-5042,03/05/2025,8,Support responsiveness,Mid-Market,Belgium,C. Mercier
+Client R2,NPS-5043,01/26/2025,8,Pricing,SMB,Germany,B. Janssen
+Client S2,NPS-5044,08/11/2025,5,Onboarding experience,Enterprise,Netherlands,D. Schmidt
+Client T2,NPS-5045,02/06/2025,6,Feature range,Mid-Market,United Kingdom,D. Schmidt
+Client U2,NPS-5046,03/10/2025,4,Onboarding experience,Enterprise,Belgium,C. Mercier
+Client V2,NPS-5047,03/31/2025,8,Feature range,Mid-Market,United Kingdom,D. Schmidt
+Client W2,NPS-5048,06/08/2025,9,Product reliability,SMB,Netherlands,D. Schmidt
+Client X2,NPS-5049,08/20/2025,8,Feature range,SMB,Netherlands,D. Schmidt
+Client Y2,NPS-5050,04/28/2025,8,Pricing,Mid-Market,Netherlands,A. de Vries
+Client Z2,NPS-5051,11/10/2025,9,Support responsiveness,SMB,Belgium,C. Mercier
+Client A3,NPS-5052,02/24/2025,5,Onboarding experience,Enterprise,Germany,C. Mercier
+Client B3,NPS-5053,08/02/2025,7,Onboarding experience,SMB,Belgium,A. de Vries
+Client C3,NPS-5054,07/11/2025,3,Onboarding experience,Enterprise,United Kingdom,C. Mercier
+Client D3,NPS-5055,02/09/2025,4,Support responsiveness,Enterprise,Germany,A. de Vries
+Client E3,NPS-5056,06/02/2025,7,Pricing,Mid-Market,United Kingdom,C. Mercier
+Client F3,NPS-5057,11/10/2025,6,Product reliability,SMB,Belgium,A. de Vries
+Client G3,NPS-5058,11/10/2025,8,Product reliability,Mid-Market,United Kingdom,B. Janssen
+Client H3,NPS-5059,11/13/2025,6,Onboarding experience,Mid-Market,United Kingdom,B. Janssen
+Client I3,NPS-5060,04/25/2025,9,Feature range,Mid-Market,Belgium,C. Mercier
+Client J3,NPS-5061,08/16/2025,8,Support responsiveness,SMB,Netherlands,B. Janssen
+Client K3,NPS-5062,10/31/2025,6,Onboarding experience,SMB,Germany,D. Schmidt
+Client L3,NPS-5063,08/17/2025,6,Onboarding experience,Enterprise,United Kingdom,A. de Vries
+Client M3,NPS-5064,10/11/2025,5,Support responsiveness,Mid-Market,United Kingdom,C. Mercier
+Client N3,NPS-5065,11/05/2025,7,Feature range,SMB,Germany,D. Schmidt
+Client O3,NPS-5066,01/15/2025,6,Pricing,Enterprise,Belgium,A. de Vries
+Client P3,NPS-5067,03/17/2025,8,Feature range,SMB,Belgium,C. Mercier
+Client Q3,NPS-5068,04/15/2025,9,Support responsiveness,SMB,Belgium,B. Janssen
+Client R3,NPS-5069,04/12/2025,7,Feature range,Mid-Market,Germany,B. Janssen
+Client S3,NPS-5070,09/01/2025,9,Support responsiveness,SMB,Germany,A. de Vries
+Client T3,NPS-5071,07/01/2025,10,Feature range,SMB,United Kingdom,A. de Vries
+Client U3,NPS-5072,06/20/2025,4,Feature range,Enterprise,United Kingdom,A. de Vries
+Client V3,NPS-5073,02/20/2025,5,Feature range,Enterprise,Germany,B. Janssen
+Client W3,NPS-5074,12/11/2025,8,Pricing,SMB,Germany,A. de Vries
+Client X3,NPS-5075,09/10/2025,8,Pricing,Mid-Market,Belgium,B. Janssen
+Client Y3,NPS-5076,11/18/2025,4,Onboarding experience,Enterprise,Netherlands,D. Schmidt
+Client Z3,NPS-5077,06/19/2025,7,Onboarding experience,Mid-Market,Germany,D. Schmidt
+Client A4,NPS-5078,04/07/2025,6,Onboarding experience,Enterprise,Belgium,C. Mercier
+Client B4,NPS-5079,06/04/2025,6,Onboarding experience,Mid-Market,Belgium,B. Janssen
+Client C4,NPS-5080,07/12/2025,10,Onboarding experience,SMB,Germany,D. Schmidt
+Client D4,NPS-5081,08/20/2025,10,Pricing,SMB,United Kingdom,B. Janssen
+Client E4,NPS-5082,05/23/2025,7,Support responsiveness,Mid-Market,United Kingdom,A. de Vries
+Client F4,NPS-5083,03/31/2025,6,Support responsiveness,Enterprise,United Kingdom,C. Mercier
+Client G4,NPS-5084,11/13/2025,3,Onboarding experience,Enterprise,Netherlands,A. de Vries
+Client H4,NPS-5085,10/12/2025,7,Pricing,SMB,Belgium,C. Mercier
+Client I4,NPS-5086,09/22/2025,8,Feature range,SMB,Netherlands,C. Mercier
+Client J4,NPS-5087,03/27/2025,6,Pricing,Mid-Market,United Kingdom,B. Janssen
+Client K4,NPS-5088,10/29/2025,5,Support responsiveness,Enterprise,United Kingdom,C. Mercier
+Client L4,NPS-5089,11/16/2025,2,Onboarding experience,Enterprise,Belgium,B. Janssen
+Client M4,NPS-5090,07/18/2025,7,Onboarding experience,SMB,United Kingdom,B. Janssen
+Client N4,NPS-5091,02/15/2025,5,Onboarding experience,Enterprise,Netherlands,B. Janssen
+Client O4,NPS-5092,01/17/2025,3,Onboarding experience,Enterprise,Belgium,C. Mercier
+Client P4,NPS-5093,07/17/2025,3,Onboarding experience,Enterprise,Germany,C. Mercier
+Client Q4,NPS-5094,04/28/2025,7,Product reliability,Mid-Market,Germany,D. Schmidt
+Client R4,NPS-5095,08/05/2025,10,Support responsiveness,SMB,Germany,A. de Vries
+Client S4,NPS-5096,01/19/2025,9,Onboarding experience,Mid-Market,Belgium,A. de Vries
+Client T4,NPS-5097,01/12/2025,4,Onboarding experience,Enterprise,Germany,D. Schmidt
+Client U4,NPS-5098,09/06/2025,9,Onboarding experience,SMB,Belgium,C. Mercier
+Client V4,NPS-5099,08/01/2025,9,Feature range,SMB,Germany,A. de Vries
+Client W4,NPS-5100,05/08/2025,10,Onboarding experience,SMB,Germany,C. Mercier
+Client X4,NPS-5101,08/24/2025,5,Support responsiveness,Enterprise,Netherlands,C. Mercier
+Client Y4,NPS-5102,01/12/2025,7,Support responsiveness,SMB,Netherlands,C. Mercier
+Client Z4,NPS-5103,01/12/2025,7,Onboarding experience,SMB,Germany,B. Janssen
+Client A5,NPS-5104,11/02/2025,3,Product reliability,Enterprise,Netherlands,C. Mercier
+Client B5,NPS-5105,04/23/2025,7,Pricing,SMB,United Kingdom,B. Janssen
+Client C5,NPS-5106,01/16/2025,8,Feature range,SMB,Belgium,A. de Vries
+Client D5,NPS-5107,08/19/2025,9,Support responsiveness,Mid-Market,United Kingdom,B. Janssen
+Client E5,NPS-5108,04/14/2025,6,Onboarding experience,Mid-Market,Belgium,A. de Vries
+Client F5,NPS-5109,11/18/2025,3,Feature range,Enterprise,Belgium,B. Janssen
+Client G5,NPS-5110,03/21/2025,5,Onboarding experience,Enterprise,Germany,A. de Vries
+Client H5,NPS-5111,11/03/2025,5,Onboarding experience,Mid-Market,Netherlands,B. Janssen
+Client I5,NPS-5112,12/01/2025,9,Feature range,SMB,Belgium,A. de Vries
+Client J5,NPS-5113,10/05/2025,9,Feature range,SMB,Germany,A. de Vries
+Client K5,NPS-5114,06/14/2025,8,Pricing,Mid-Market,Netherlands,C. Mercier
+Client L5,NPS-5115,07/29/2025,4,Product reliability,Enterprise,Belgium,A. de Vries
+Client M5,NPS-5116,10/07/2025,6,Pricing,SMB,United Kingdom,C. Mercier
+Client N5,NPS-5117,01/15/2025,6,Onboarding experience,Mid-Market,Netherlands,A. de Vries
+Client O5,NPS-5118,06/01/2025,7,Pricing,Mid-Market,Belgium,C. Mercier
+Client P5,NPS-5119,03/13/2025,6,Onboarding experience,Mid-Market,Germany,A. de Vries

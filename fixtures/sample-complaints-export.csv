@@ -1,0 +1,91 @@
+Customer Name,Complaint Reference,Date Raised,Date Resolved,Complaint Category,Complaint Detail,Resolution,Channel,Region,Handling Team,Contract Value
+Customer A1,CMP-10000,03/11/2025,04/11/2025,Billing,Unexplained fee increase,Partially Upheld,Branch,West,Team Bravo,19365
+Customer B1,CMP-10001,08/09/2025,08/21/2025,Staff Conduct,Unhelpful response,Partially Upheld,Email,North,Team Alpha,17874
+Customer C1,CMP-10002,07/03/2025,07/06/2025,Product Quality,Failed within warranty,Partially Upheld,Branch,North,Team Bravo,6385
+Customer D1,CMP-10003,03/25/2025,04/03/2025,Delivery,Damaged in transit,Not Upheld,Email,West,Team Bravo,6278
+Customer E1,CMP-10004,07/23/2025,08/28/2025,Billing,Incorrect invoice amount,Partially Upheld,Web Form,South,Team Bravo,12100
+Customer F1,CMP-10005,06/26/2025,06/30/2025,Delivery,Damaged in transit,Upheld,Phone,East,Team Bravo,23983
+Customer G1,CMP-10006,05/11/2025,05/13/2025,Product Quality,Faulty on arrival,Partially Upheld,Email,West,Team Alpha,17496
+Customer H1,CMP-10007,11/15/2025,11/25/2025,Delivery,Late delivery,Upheld,Phone,North,Team Charlie,16961
+Northwind Traders,CMP-10008,01/09/2025,01/12/2025,Delivery,Late delivery,Upheld,Phone,South,Team Alpha,184126
+Customer J1,CMP-10009,06/07/2025,06/17/2025,Staff Conduct,Unhelpful response,Upheld,Branch,North,Team Alpha,12797
+Customer K1,CMP-10010,03/30/2025,05/25/2025,Billing,Incorrect invoice amount,Not Upheld,Phone,North,Team Bravo,9174
+Customer L1,CMP-10011,11/01/2025,11/09/2025,Staff Conduct,Unhelpful response,Partially Upheld,Email,South,Team Bravo,13194
+Customer M1,CMP-10012,04/09/2025,05/05/2025,Billing,Unexplained fee increase,Partially Upheld,Phone,North,Team Bravo,19761
+Customer N1,CMP-10013,06/27/2025,07/08/2025,Staff Conduct,Unhelpful response,Not Upheld,Email,East,Team Bravo,11171
+Customer O1,CMP-10014,10/22/2025,12/06/2025,Billing,Unexplained fee increase,Not Upheld,Web Form,North,Team Bravo,21559
+Customer P1,CMP-10015,05/07/2025,06/16/2025,Billing,Duplicate charge,Partially Upheld,Branch,North,Team Bravo,5045
+Customer Q1,CMP-10016,06/16/2025,07/31/2025,Billing,Unexplained fee increase,Partially Upheld,Email,North,Team Alpha,23301
+Customer R1,CMP-10017,04/21/2025,04/26/2025,Staff Conduct,Unhelpful response,Partially Upheld,Email,North,Team Bravo,16466
+Northwind Traders,CMP-10018,01/22/2025,01/27/2025,Delivery,Damaged in transit,Upheld,Email,West,Team Bravo,214230
+Contoso Group,CMP-10019,06/09/2025,06/13/2025,Product Quality,Below advertised spec,Partially Upheld,Web Form,West,Team Alpha,245428
+Northwind Traders,CMP-10020,05/22/2025,05/27/2025,Product Quality,Failed within warranty,Partially Upheld,Email,South,Team Bravo,270041
+Fabrikam Holdings,CMP-10021,07/17/2025,08/26/2025,Billing,Duplicate charge,Partially Upheld,Branch,North,Team Bravo,260619
+Customer W1,CMP-10022,01/31/2025,03/17/2025,Billing,Incorrect invoice amount,Partially Upheld,Email,North,Team Charlie,13381
+Customer X1,CMP-10023,09/07/2025,09/20/2025,Delivery,Item never arrived,Upheld,Phone,West,Team Charlie,6645
+Customer Y1,CMP-10024,02/03/2025,03/05/2025,Billing,Duplicate charge,Not Upheld,Phone,North,Team Charlie,10294
+Customer Z1,CMP-10025,06/06/2025,06/10/2025,Product Quality,Failed within warranty,Upheld,Email,West,Team Alpha,17315
+Customer A2,CMP-10026,02/21/2025,03/02/2025,Delivery,Item never arrived,Upheld,Phone,East,Team Charlie,9745
+Customer B2,CMP-10027,11/07/2025,01/01/2026,Billing,Unexplained fee increase,Not Upheld,Branch,East,Team Charlie,9204
+Customer C2,CMP-10028,09/11/2025,09/14/2025,Staff Conduct,Unhelpful response,Partially Upheld,Phone,South,Team Charlie,8128
+Customer D2,CMP-10029,06/21/2025,06/29/2025,Delivery,Damaged in transit,Upheld,Web Form,North,Team Bravo,4147
+Customer E2,CMP-10030,03/14/2025,04/22/2025,Billing,Incorrect invoice amount,Not Upheld,Web Form,East,Team Charlie,17712
+Customer F2,CMP-10031,11/03/2025,11/11/2025,Delivery,Damaged in transit,Upheld,Email,North,Team Alpha,25883
+Customer G2,CMP-10032,02/16/2025,02/22/2025,Delivery,Damaged in transit,Upheld,Phone,East,Team Bravo,14063
+Customer H2,CMP-10033,07/30/2025,08/10/2025,Delivery,Damaged in transit,Upheld,Branch,West,Team Bravo,6945
+Customer I2,CMP-10034,05/22/2025,06/24/2025,Billing,Duplicate charge,Not Upheld,Phone,North,Team Bravo,9169
+Customer J2,CMP-10035,01/21/2025,03/09/2025,Billing,Unexplained fee increase,Not Upheld,Email,North,Team Bravo,15197
+Customer K2,CMP-10036,07/07/2025,07/16/2025,Product Quality,Below advertised spec,Partially Upheld,Phone,West,Team Alpha,9984
+Customer L2,CMP-10037,10/16/2025,11/13/2025,Billing,Unexplained fee increase,Not Upheld,Web Form,North,Team Bravo,16115
+Customer M2,CMP-10038,05/24/2025,05/27/2025,Delivery,Item never arrived,Upheld,Branch,South,Team Charlie,8618
+Customer N2,CMP-10039,05/01/2025,06/18/2025,Billing,Incorrect invoice amount,Not Upheld,Phone,North,Team Bravo,7412
+Contoso Group,CMP-10040,08/15/2025,08/22/2025,Product Quality,Faulty on arrival,Upheld,Branch,South,Team Alpha,244013
+Customer P2,CMP-10041,07/01/2025,07/04/2025,Staff Conduct,Rude interaction,Partially Upheld,Phone,West,Team Charlie,16603
+Customer Q2,CMP-10042,09/13/2025,09/21/2025,Staff Conduct,Promise not honoured,Not Upheld,Email,West,Team Bravo,9698
+Customer R2,CMP-10043,06/14/2025,06/18/2025,Delivery,Late delivery,Upheld,Phone,West,Team Bravo,13936
+Customer S2,CMP-10044,09/29/2025,11/20/2025,Billing,Incorrect invoice amount,Partially Upheld,Phone,North,Team Bravo,8791
+Customer T2,CMP-10045,07/13/2025,07/17/2025,Delivery,Late delivery,Upheld,Web Form,West,Team Bravo,24067
+Customer U2,CMP-10046,03/30/2025,04/11/2025,Staff Conduct,Promise not honoured,Upheld,Branch,West,Team Charlie,20076
+Customer V2,CMP-10047,03/23/2025,03/31/2025,Delivery,Damaged in transit,Upheld,Phone,East,Team Bravo,24508
+Customer W2,CMP-10048,11/12/2025,01/03/2026,Billing,Incorrect invoice amount,Partially Upheld,Web Form,West,Team Bravo,16643
+Customer X2,CMP-10049,03/12/2025,03/17/2025,Staff Conduct,Promise not honoured,Partially Upheld,Phone,South,Team Alpha,11701
+Customer Y2,CMP-10050,05/11/2025,07/03/2025,Billing,Unexplained fee increase,Upheld,Email,North,Team Alpha,14432
+Customer Z2,CMP-10051,10/12/2025,10/15/2025,Staff Conduct,Unhelpful response,Partially Upheld,Web Form,North,Team Charlie,6383
+Customer A3,CMP-10052,07/01/2025,08/18/2025,Billing,Incorrect invoice amount,Not Upheld,Email,North,Team Charlie,4986
+Customer B3,CMP-10053,07/30/2025,08/05/2025,Delivery,Late delivery,Upheld,Email,East,Team Bravo,8297
+Customer C3,CMP-10054,10/07/2025,10/18/2025,Product Quality,Failed within warranty,Partially Upheld,Branch,North,Team Alpha,4907
+Customer D3,CMP-10055,06/19/2025,06/26/2025,Staff Conduct,Promise not honoured,Partially Upheld,Email,North,Team Alpha,25004
+Customer E3,CMP-10056,03/15/2025,03/26/2025,Staff Conduct,Rude interaction,Upheld,Email,West,Team Bravo,18378
+Customer F3,CMP-10057,06/30/2025,07/08/2025,Staff Conduct,Rude interaction,Not Upheld,Email,South,Team Alpha,16183
+Customer G3,CMP-10058,04/18/2025,06/04/2025,Billing,Duplicate charge,Not Upheld,Email,North,Team Charlie,20476
+Customer H3,CMP-10059,09/04/2025,10/03/2025,Billing,Unexplained fee increase,Partially Upheld,Phone,North,Team Bravo,14974
+Customer I3,CMP-10060,09/07/2025,09/15/2025,Staff Conduct,Promise not honoured,Partially Upheld,Email,West,Team Alpha,6229
+Customer J3,CMP-10061,05/02/2025,05/11/2025,Product Quality,Failed within warranty,Upheld,Web Form,South,Team Alpha,4669
+Customer K3,CMP-10062,05/29/2025,06/05/2025,Product Quality,Failed within warranty,Upheld,Web Form,North,Team Bravo,18965
+Customer L3,CMP-10063,09/02/2025,10/12/2025,Billing,Duplicate charge,Not Upheld,Branch,North,Team Bravo,12467
+Customer M3,CMP-10064,05/04/2025,05/17/2025,Product Quality,Faulty on arrival,Upheld,Branch,North,Team Charlie,8298
+Customer N3,CMP-10065,10/07/2025,10/13/2025,Delivery,Damaged in transit,Upheld,Email,North,Team Bravo,9626
+Customer O3,CMP-10066,10/14/2025,10/24/2025,Product Quality,Failed within warranty,Partially Upheld,Phone,East,Team Charlie,20470
+Customer P3,CMP-10067,11/26/2025,11/30/2025,Product Quality,Faulty on arrival,Upheld,Branch,North,Team Bravo,15929
+Fabrikam Holdings,CMP-10068,06/21/2025,06/29/2025,Staff Conduct,Unhelpful response,Not Upheld,Branch,East,Team Bravo,272087
+Customer R3,CMP-10069,08/15/2025,08/24/2025,Staff Conduct,Unhelpful response,Partially Upheld,Branch,East,Team Bravo,23924
+Customer S3,CMP-10070,08/26/2025,09/30/2025,Billing,Duplicate charge,Upheld,Phone,North,Team Charlie,8789
+Customer T3,CMP-10071,02/26/2025,03/05/2025,Staff Conduct,Promise not honoured,Not Upheld,Phone,East,Team Bravo,22111
+Customer U3,CMP-10072,08/20/2025,08/27/2025,Product Quality,Below advertised spec,Partially Upheld,Phone,East,Team Charlie,16763
+Customer V3,CMP-10073,09/26/2025,10/04/2025,Product Quality,Faulty on arrival,Upheld,Email,East,Team Charlie,5813
+Customer W3,CMP-10074,09/13/2025,09/25/2025,Product Quality,Below advertised spec,Upheld,Web Form,North,Team Bravo,10109
+Customer X3,CMP-10075,02/08/2025,03/10/2025,Billing,Incorrect invoice amount,Upheld,Branch,North,Team Bravo,22480
+Customer Y3,CMP-10076,02/02/2025,03/27/2025,Billing,Unexplained fee increase,Partially Upheld,Phone,North,Team Alpha,5003
+Customer Z3,CMP-10077,03/31/2025,05/29/2025,Billing,Unexplained fee increase,Partially Upheld,Web Form,South,Team Alpha,25066
+Customer A4,CMP-10078,08/24/2025,08/26/2025,Product Quality,Below advertised spec,Upheld,Web Form,East,Team Bravo,6573
+Customer B4,CMP-10079,11/28/2025,12/03/2025,Staff Conduct,Unhelpful response,Partially Upheld,Email,East,Team Alpha,6562
+Fabrikam Holdings,CMP-10080,01/06/2025,01/17/2025,Delivery,Item never arrived,Not Upheld,Web Form,West,Team Charlie,236812
+Northwind Traders,CMP-10081,11/07/2025,12/19/2025,Billing,Duplicate charge,Upheld,Web Form,North,Team Alpha,199065
+Customer E4,CMP-10082,08/23/2025,09/02/2025,Delivery,Late delivery,Not Upheld,Phone,West,Team Bravo,16877
+Customer F4,CMP-10083,03/11/2025,03/13/2025,Delivery,Damaged in transit,Upheld,Email,North,Team Charlie,18024
+Customer G4,CMP-10084,08/27/2025,10/11/2025,Billing,Unexplained fee increase,Partially Upheld,Email,North,Team Alpha,6455
+Customer H4,CMP-10085,04/22/2025,04/26/2025,Product Quality,Faulty on arrival,Partially Upheld,Web Form,East,Team Alpha,15996
+Customer I4,CMP-10086,07/19/2025,07/24/2025,Delivery,Late delivery,Upheld,Web Form,South,Team Charlie,12511
+Customer J4,CMP-10087,07/17/2025,07/24/2025,Staff Conduct,Rude interaction,Upheld,Phone,East,Team Bravo,16955
+Customer K4,CMP-10088,05/17/2025,06/21/2025,Billing,Duplicate charge,Not Upheld,Branch,North,Team Bravo,6779
+Customer L4,CMP-10089,03/16/2025,03/25/2025,Staff Conduct,Rude interaction,Upheld,Web Form,North,Team Bravo,17248
