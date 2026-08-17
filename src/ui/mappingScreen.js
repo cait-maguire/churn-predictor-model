@@ -73,8 +73,8 @@ export function renderMappingScreen(container) {
   const continueBtn = container.querySelector('#continue-btn');
   continueBtn.addEventListener('click', () => {
     const current = getState();
-    const { customers, report } = runPipeline(current.rawRows, current.fieldMap);
-    setPipelineResult(customers, report);
+    const { customers, report, mappedRows } = runPipeline(current.rawRows, current.fieldMap);
+    setPipelineResult(customers, report, mappedRows);
   });
 }
 

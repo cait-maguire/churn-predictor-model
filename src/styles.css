@@ -152,6 +152,32 @@ h4 { font-size: 0.9rem; margin: 16px 0 8px; color: var(--text-secondary); }
 .dq-nested summary { font-size: 0.8rem; color: var(--accent); cursor: pointer; display: inline; }
 .dq-account-list { font-size: 0.8rem; color: var(--text-secondary); }
 
+.training-table-panel { margin-bottom: 20px; }
+.training-table-panel summary { cursor: pointer; font-weight: 600; }
+.training-table-panel code {
+  font-size: 0.82rem;
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.tt-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px 16px;
+  margin: 4px 0 16px;
+}
+.tt-controls label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: var(--text-secondary); }
+.tt-controls input[type='text'], .tt-controls input[type='number'] {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.88rem;
+}
+.tt-controls .tt-check { flex-direction: row; align-items: center; gap: 8px; }
+
 .widget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 @media (max-width: 860px) { .widget-grid { grid-template-columns: 1fr; } }
 .widget-wide { grid-column: 1 / -1; }

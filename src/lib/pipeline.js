@@ -22,5 +22,9 @@ export function runPipeline(rawRows, fieldMap) {
     ...rollupReport,
   };
 
-  return { customers, report };
+  // nonBlankRows is returned as well as the rolled-up customers because the
+  // Stage 4 training table needs every case row - including cases that are
+  // still open, which filterChurnCases drops but which are real activity
+  // signal at any cutoff before they closed.
+  return { customers, report, mappedRows: nonBlankRows };
 }

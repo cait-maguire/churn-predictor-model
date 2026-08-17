@@ -83,6 +83,47 @@ if (!overviewAfterFilter.includes('4')) {
 
 await page.screenshot({ path: path.join(rootDir, 'build/screenshot-filtered.png'), fullPage: true });
 
+// Training-table panel: the feature/label logic has its own unit tests
+// (build/trainingTableTest.mjs); what this checks is that the panel renders
+// against the built file and that the download actually produces a CSV with
+// the declared header and row count.
+await page.locator('.training-table-panel').evaluate((el) => { el.open = true; });
+const ttText = await page.locator('.training-table-panel').innerText();
+console.log('\n--- Training table panel ---');
+console.log(ttText);
+
+for (const needle of ['account-month rows across', 'positive rows', 'labeling_case_open_at_cutoff']) {
+  if (!ttText.includes(needle)) throw new Error(`Training-table panel missing "${needle}", got: ${ttText}`);
+}
+
+const rowCountMatch = ttText.match(/Download CSV \(([\d,]+) rows\)/);
+if (!rowCountMatch) throw new Error(`Could not read the download row count from: ${ttText}`);
+const expectedRows = Number(rowCountMatch[1].replace(/,/g, ''));
+
+const download = await Promise.all([
+  page.waitForEvent('download', { timeout: 5000 }),
+  page.click('#tt-download'),
+]).then(([d]) => d);
+
+const stream = await download.createReadStream();
+let csv = '';
+for await (const chunk of stream) csv += chunk;
+const csvLines = csv.split('\n');
+
+if (download.suggestedFilename() !== 'ml_churn_account_month_v1.csv') {
+  throw new Error(`Unexpected download filename: ${download.suggestedFilename()}`);
+}
+if (!csvLines[0].startsWith('account_id,')) {
+  throw new Error(`CSV header should start with a clean account_id (no BOM), got: ${csvLines[0].slice(0, 40)}`);
+}
+for (const column of ['as_of_month', 'label_left_90d', 'labeling_case_open_at_cutoff', 'split']) {
+  if (!csvLines[0].includes(column)) throw new Error(`CSV header missing ${column}`);
+}
+if (csvLines.length - 1 !== expectedRows) {
+  throw new Error(`CSV has ${csvLines.length - 1} data rows, panel promised ${expectedRows}`);
+}
+console.log(`Training-table export: PASS (${expectedRows} rows, ${csvLines[0].split(',').length} columns)`);
+
 if (externalRequests.length > 0) {
   throw new Error(`Unexpected non-local requests during the flow: ${JSON.stringify(externalRequests)}`);
 }
