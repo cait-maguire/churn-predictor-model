@@ -13,6 +13,7 @@ import Papa from 'papaparse';
 
 import { profileColumns, COLUMN_TYPE } from '../src/lib/profileColumns.js';
 import { suggestRoles, dimensionsFor, ROLE, missingRequiredRoles } from '../src/lib/roles.js';
+import { buildFindings, buildRecords, amountIsPerEntity, twoProportionP } from '../src/lib/findings.js';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -148,6 +149,121 @@ test('reason and outcome stay in the dimension sweep', () => {
   assert.ok(dims.includes('Primary Driver'));
   assert.ok(dims.includes('Segment'));
   assert.ok(dims.includes('Market'));
+});
+
+console.log('\nFindings engine — recovering planted patterns');
+
+function analyse(fixture, profiled) {
+  const roles = suggestRoles(profiled.profiles);
+  const dimensions = dimensionsFor(profiled.profiles, roles);
+  return buildFindings(fixture.rows, roles, dimensions);
+}
+
+const complaintsResult = analyse(complaints, complaintsP);
+const npsResult = analyse(nps, npsP);
+const churnResult = analyse(churn, churnP);
+
+const textOf = (result) => result.findings.map((f) => f.text).join('\n');
+
+test('complaints: the planted resolution-time gap is found', () => {
+  const finding = complaintsResult.findings.find((f) => f.kind === 'duration' && f.value === 'Billing');
+  assert.ok(finding, `no Billing duration finding in:\n${textOf(complaintsResult)}`);
+  // Planted: Billing 25-60 days, everything else 2-14.
+  assert.ok(finding.stats.ratio > 3, `expected a large ratio, got ${finding.stats.ratio}`);
+});
+
+test('complaints: the planted Billing/North concentration is found', () => {
+  const finding = complaintsResult.findings.find(
+    (f) => f.kind === 'crossLift' && f.value === 'North' && /Billing/.test(f.text)
+  );
+  assert.ok(finding, `no North/Billing finding in:\n${textOf(complaintsResult)}`);
+  assert.ok(finding.stats.lift > 2);
+  assert.ok(finding.stats.p < 0.05);
+});
+
+test('complaints: value concentration across customers is found', () => {
+  const finding = complaintsResult.findings.find((f) => f.kind === 'concentration');
+  assert.ok(finding, 'no concentration finding');
+  assert.ok(finding.stats.topCustomers < finding.stats.totalCustomers * 0.35);
+});
+
+test('NPS: the planted Enterprise score gap is found', () => {
+  const finding = npsResult.findings.find((f) => f.kind === 'score' && f.value === 'Enterprise');
+  assert.ok(finding, `no Enterprise score finding in:\n${textOf(npsResult)}`);
+  assert.ok(finding.stats.diff < -2, `expected Enterprise well below average, got ${finding.stats.diff}`);
+});
+
+test('NPS: the overview computes a real NPS, and no total value', () => {
+  assert.equal(npsResult.overview.totalAmount, null);
+  assert.ok(npsResult.overview.nps < 0);
+  assert.ok(npsResult.overview.meanScore > 6 && npsResult.overview.meanScore < 7);
+});
+
+test('a 17-row file yields no findings rather than confident noise', () => {
+  // The churn fixture is far too small to support any claim. Reporting
+  // nothing is the correct behaviour, and the suppression rules are the
+  // main thing standing between this tool and confident nonsense.
+  assert.equal(churnResult.findings.length, 0);
+  assert.equal(churnResult.overview.caseCount, 17);
+});
+
+test('every reported finding clears its minimum sample size', () => {
+  for (const result of [complaintsResult, npsResult]) {
+    for (const finding of result.findings) {
+      assert.ok(finding.n >= 5, `finding rests on n=${finding.n}: ${finding.text}`);
+      assert.equal(finding.confidence, finding.n < 25 ? 'indicative' : 'strong');
+    }
+  }
+});
+
+test('findings are ranked and capped, not dumped', () => {
+  assert.ok(complaintsResult.candidateCount > complaintsResult.findings.length);
+  assert.ok(complaintsResult.findings.length <= 12);
+  const kinds = complaintsResult.findings.map((f) => f.kind);
+  for (const kind of new Set(kinds)) {
+    assert.ok(kinds.filter((k) => k === kind).length <= 3, `too many ${kind} findings`);
+  }
+});
+
+console.log('\nStatistics');
+
+test('two-proportion test separates a real gap from a coin flip', () => {
+  assert.ok(twoProportionP(45, 50, 5, 50) < 0.001);
+  assert.ok(twoProportionP(25, 50, 24, 50) > 0.5);
+});
+
+test('an amount repeated across an entity is not summed per case', () => {
+  // Three cases for one customer, all carrying the same account revenue.
+  const records = buildRecords(
+    [
+      { c: 'A', v: '1000' },
+      { c: 'A', v: '1000' },
+      { c: 'A', v: '1000' },
+      { c: 'B', v: '500' },
+      { c: 'B', v: '500' },
+      { c: 'C', v: '250' },
+      { c: 'C', v: '250' },
+    ],
+    { entity: 'c', amount: 'v' },
+    []
+  );
+  assert.equal(amountIsPerEntity(records), true);
+});
+
+test('genuinely varying per-case amounts are detected as per-case', () => {
+  const records = buildRecords(
+    [
+      { c: 'A', v: '100' },
+      { c: 'A', v: '900' },
+      { c: 'B', v: '50' },
+      { c: 'B', v: '700' },
+      { c: 'C', v: '20' },
+      { c: 'C', v: '640' },
+    ],
+    { entity: 'c', amount: 'v' },
+    []
+  );
+  assert.equal(amountIsPerEntity(records), false);
 });
 
 console.log(`\n${passed} passed, ${failed} failed\n`);
