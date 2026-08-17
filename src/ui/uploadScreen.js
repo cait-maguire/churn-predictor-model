@@ -1,6 +1,8 @@
 import { parseFile } from '../lib/parseFile.js';
 import { FIXED_FIELDS, MAPPABLE_FIELDS } from '../lib/fieldCatalog.js';
 import { suggestAllMappings, suggestFixedMapping } from '../lib/mapping.js';
+import { profileColumns } from '../lib/profileColumns.js';
+import { suggestRoles } from '../lib/roles.js';
 import { setUploadResult } from '../state/store.js';
 import { resetCategoricalColors } from './chartColors.js';
 import { escapeHtml, formatNumber } from './utils.js';
@@ -12,9 +14,11 @@ export function renderUploadScreen(container) {
 
   container.innerHTML = `
     <section class="panel upload-panel">
-      <h1>Churn Analysis Dashboard</h1>
+      <h1>Case Analysis Dashboard</h1>
       <p class="subtitle">
-        Upload your case export (CSV or XLSX) to analyze who churned and why.
+        Upload a case export (CSV or XLSX) — churn, complaints, NPS or anything
+        case-per-row — and the tool will profile the columns and tell you what
+        the data says.
         Everything is processed in your browser — no data leaves this machine,
         and nothing is saved: closing or refreshing this page clears everything.
       </p>
@@ -62,6 +66,14 @@ async function handleFile(file, statusEl) {
       return;
     }
 
+    // Source-agnostic path: work out what each column is, then what role it
+    // plays. This runs for every file, whatever its origin.
+    const columnProfiles = profileColumns(rows, headers);
+    const roles = suggestRoles(columnProfiles);
+
+    // Churn path: only when the file matches the Phase 1 Salesforce export
+    // closely enough for the churn-specific pipeline (which applies the
+    // Case Status = Closed rule and the churn widgets) to be meaningful.
     const fieldMap = {};
     for (const field of FIXED_FIELDS) {
       fieldMap[field.key] = suggestFixedMapping(field, headers).header;
@@ -70,6 +82,7 @@ async function handleFile(file, statusEl) {
     for (const [key, match] of Object.entries(suggestedMappable)) {
       fieldMap[key] = match.tier === 'none' ? null : match.header;
     }
+    const isChurnFormat = FIXED_FIELDS.every((field) => fieldMap[field.key]);
 
     statusEl.innerHTML = `
       <div class="status-preview">
@@ -88,7 +101,11 @@ async function handleFile(file, statusEl) {
       </div>
     `;
 
-    setUploadResult({ name: file.name, headers, rowCount: rows.length }, rows, fieldMap);
+    setUploadResult({ name: file.name, headers, rowCount: rows.length }, rows, fieldMap, {
+      columnProfiles,
+      roles,
+      isChurnFormat,
+    });
   } catch (err) {
     statusEl.innerHTML = `<p class="status-error">Could not parse this file: ${escapeHtml(err?.message || String(err))}</p>`;
   }

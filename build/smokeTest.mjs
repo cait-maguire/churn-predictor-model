@@ -83,6 +83,46 @@ if (!overviewAfterFilter.includes('4')) {
 
 await page.screenshot({ path: path.join(rootDir, 'build/screenshot-filtered.png'), fullPage: true });
 
+// Source-agnostic path: a file the tool has never seen, with none of the
+// Phase 1 column names, must still get through mapping and produce
+// findings. This is the check that the analysis layer is genuinely generic
+// rather than the churn export wearing a disguise.
+const genericPage = await browser.newPage({ viewport: { width: 1280, height: 1400 } });
+genericPage.on('request', (req) => {
+  const url = req.url();
+  if (!/^(file|data|blob|about):/.test(url)) externalRequests.push(url);
+});
+genericPage.on('pageerror', (err) => { throw new Error(`Page error (complaints): ${err.message}`); });
+
+await genericPage.goto(`file://${distPath}`);
+await genericPage.setInputFiles('#file-input', path.join(rootDir, 'fixtures/sample-complaints-export.csv'));
+await genericPage.waitForSelector('#continue-btn', { timeout: 5000 });
+
+if (await genericPage.locator('#continue-btn').isDisabled()) {
+  throw new Error('Complaints export could not be mapped — required roles were not detected.');
+}
+await genericPage.click('#continue-btn');
+await genericPage.waitForSelector('.findings-panel', { timeout: 5000 });
+
+const findingsText = await genericPage.locator('.findings-panel').innerText();
+console.log('\n--- Findings (complaints export) ---');
+console.log(findingsText);
+
+for (const needle of ['90 cases covering 84 customers', 'Billing cases take a median', 'cleared the thresholds']) {
+  if (!findingsText.includes(needle)) {
+    throw new Error(`Findings panel missing "${needle}", got:\n${findingsText}`);
+  }
+}
+// The churn-specific widgets must not appear for a non-churn file.
+if (await genericPage.locator('.segment-breakdown-widget').count() > 0) {
+  throw new Error('Churn widgets rendered for a complaints export.');
+}
+if (await genericPage.locator('.dimension-breakdown-widget').count() === 0) {
+  throw new Error('Generic breakdown widget did not render for a complaints export.');
+}
+await genericPage.screenshot({ path: path.join(rootDir, 'build/screenshot-findings.png'), fullPage: true });
+console.log('Source-agnostic path: PASS');
+
 if (externalRequests.length > 0) {
   throw new Error(`Unexpected non-local requests during the flow: ${JSON.stringify(externalRequests)}`);
 }

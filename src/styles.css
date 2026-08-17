@@ -152,6 +152,51 @@ h4 { font-size: 0.9rem; margin: 16px 0 8px; color: var(--text-secondary); }
 .dq-nested summary { font-size: 0.8rem; color: var(--accent); cursor: pointer; display: inline; }
 .dq-account-list { font-size: 0.8rem; color: var(--text-secondary); }
 
+/* Findings */
+.findings-panel { margin-bottom: 20px; }
+.findings-title { font-size: 1.15rem; margin: 0 0 8px; }
+.findings-overview { font-size: 0.95rem; color: var(--text-secondary); margin: 0 0 16px; line-height: 1.6; }
+.findings-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 12px; }
+.finding { line-height: 1.55; }
+.finding-kind {
+  display: inline-block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-right: 8px;
+}
+.finding-text { font-size: 0.95rem; }
+.finding-meta { display: block; font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+.finding-thin { color: var(--error); font-style: normal; margin-left: 6px; }
+.finding-indicative .finding-text { color: var(--text-secondary); }
+.findings-footnote, .findings-empty {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 16px 0 0;
+}
+.findings-empty { margin-top: 0; }
+
+/* Column profile preview on the mapping screen */
+.column-profile-details { margin: 16px 0 8px; }
+.column-profile-details summary { cursor: pointer; font-size: 0.85rem; color: var(--accent); }
+.profile-grid { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+.profile-row {
+  display: grid;
+  grid-template-columns: 200px 100px 150px 1fr;
+  gap: 10px;
+  font-size: 0.8rem;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+}
+.profile-header { font-weight: 600; }
+.profile-type { color: var(--accent); }
+.profile-meta, .profile-sample { color: var(--text-muted); }
+.profile-sample { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.role-hint { display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+@media (max-width: 720px) { .profile-row { grid-template-columns: 1fr 1fr; } }
+
 .widget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 @media (max-width: 860px) { .widget-grid { grid-template-columns: 1fr; } }
 .widget-wide { grid-column: 1 / -1; }

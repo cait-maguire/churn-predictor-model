@@ -1,9 +1,13 @@
-# Churn Analysis Dashboard — Phase 1
+# Case Analysis Dashboard
 
-A single-file, fully offline HTML tool for analyzing churn from a Salesforce
-case export. Upload your file, confirm the column mapping, and explore who
-churned, why, and how much revenue was lost — with cross-filtering across
-segments and churn reasons.
+A single-file, fully offline HTML tool for analysing case exports. Upload a
+file, confirm what its columns are, and get a written account of what the
+data says — followed by the charts that support it.
+
+It works on any case-per-row export, not just churn: complaints, NPS, or
+anything else with one row per case. The tool profiles every column, works
+out what each one is, and analyses whatever it finds. A Salesforce churn
+export additionally gets the churn-specific dashboard described below.
 
 **The deliverable is `dist/churn-dashboard.html`.** Open it directly in a
 browser (double-click it, or open the `file://` path) — no server, no
@@ -42,14 +46,66 @@ npm install -D playwright
 node build/smokeTest.mjs
 ```
 
+## What this data says — the findings section
+
+Above the charts is a written analysis. It is computed, not generated: a
+fixed battery of statistical questions is asked of whatever columns the
+file turned out to have, and the answers that survive are written into
+sentences. Examples from the bundled synthetic fixtures:
+
+```
+TIME TO CLOSE  Billing cases take a median of 44 days to close, 6.2× longer
+               than the 7 days everything else takes.            n=30
+PATTERN        Among North, 59% of cases are Billing — against 12%
+               elsewhere.                                        n=41
+CONCENTRATION  2 of 84 customers (2%) account for half of the total value.
+SCORE          Enterprise averages 4.3 against 7.6 for everything else —
+               3.3 points lower.                                 n=35
+```
+
+The generators cover value concentration across customers, share-of-value
+against share-of-cases, cross-dimension lift, time-to-close by category,
+score gaps, and shift over time. Which ones run depends on which roles the
+file fills: two dates enable time-to-close, a rating enables score
+comparisons, a value column enables concentration.
+
+**There is no LLM involved.** The tool is fully offline, so sending your
+data to a model is not an option, and the prose is templated from computed
+statistics. That is the better trade here: every claim traces back to the
+rows that produced it, and nothing can be invented that is not in the data.
+
+### Why it often says less than you expect
+
+Any breakdown of a few hundred rows throws up dozens of apparent
+differences, and almost all of them are sampling noise. Before a finding
+can be stated it must clear:
+
+- a minimum cell size (5 cases) and group size (10 cases);
+- a significance test — two-proportion z-test for rates, Welch's t-test for
+  means — at p < 0.05;
+- a minimum effect size (roughly 1.75× lift, 1.5× duration, 1 point of
+  score, 12 percentage points of shift).
+
+Findings are then ranked by effect size and capped per kind and per column,
+so one strong signal cannot fill the page with restatements of itself. On
+the complaints fixture, 61 candidate comparisons become 10 stated findings.
+Anything resting on fewer than 25 cases is marked **thin evidence**.
+
+When nothing clears the bar the tool says so. The 17-row churn fixture
+produces no findings at all, and that is the correct output — not a
+failure.
+
 ## What the tool does (Phase 1 scope)
 
-1. **Upload** one churn case export (`.csv` or `.xlsx`) — one row per case,
-   with account-level fields (Revenue, Service Market, etc.) repeated across
-   every case row for that account.
-2. **Confirm column mapping.** The customer key (Account Official Name) and
-   Revenue are auto-detected by exact/near name match and required; all
-   other fields are auto-suggested but you confirm or override them.
+1. **Upload** a case export (`.csv` or `.xlsx`) — one row per case.
+2. **Confirm what the columns are.** Every column is profiled (type,
+   cardinality, blank rate, sample values) and mapped to a *role* rather
+   than to a known field name: customer identifier and event date are
+   required, while value, score, outcome, reason and a second date are
+   optional and each unlock more analysis. Any remaining categorical column
+   becomes a breakdown dimension automatically, which is what lets the tool
+   analyse an export it has never seen. If the file also matches the
+   Salesforce churn format, its churn-specific fields are mapped as well.
 3. **Review the data-quality summary** — row counts at every pipeline
    stage, blank rows dropped, rows excluded for a missing customer key or
    revenue, accounts with inconsistent values across their case rows, and
@@ -67,10 +123,11 @@ node build/smokeTest.mjs
    related subreasons read as one family. Click any bar, slice, or legend
    item to cross-filter the rest of the dashboard; click it again to clear.
 
-### Expected columns
+### The churn export format
 
-The tool is built against this export format (auto-detected by name; any
-column can be remapped on the mapping screen):
+When a file carries these columns, the churn-specific dashboard runs in
+addition to the findings section. Any other file gets the findings section
+plus a generic breakdown by any detected column.
 
 ```
 Account Official Name    <- customer key (required)
@@ -91,10 +148,24 @@ Account Crm Url          <- used to detect duplicate account names
 Affiliate Crm Url
 ```
 
-Out of scope for Phase 1 (by design, for later phases): case-feedback/NPS
-analysis and predictive modeling. The internal pipeline (`src/lib/`) is
-staged (parse → map → filter → rollup) specifically so those can be added
-without a rewrite.
+Not yet built: joining a second file (e.g. a Cobra export) to add
+contextual attributes about the same customers, and predictive modelling.
+The pipeline (`src/lib/`) is staged — profile → roles → parse → map →
+filter → rollup → findings — so both fit without a rewrite.
+
+## Tests
+
+```
+npm test        # profiling, role inference and the findings engine (24 tests)
+npm run smoke   # drives the built HTML in a real browser (needs Playwright)
+```
+
+`npm test` runs the same code against three differently-shaped fixtures —
+churn, complaints and NPS — and asserts it reaches correct conclusions
+about each without any of them being special-cased, including recovering
+patterns deliberately planted in the synthetic files. The synthetic
+fixtures exist because no real complaints or NPS export was available to
+design against.
 
 ## Assumptions made (please confirm or correct)
 
